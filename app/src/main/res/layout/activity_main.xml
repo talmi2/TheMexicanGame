@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity"
+    android:background="@drawable/bg"
+    >
+
+
+
+
+    <TextView
+        android:id="@+id/main_textview_greeting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="Welcome To The Mexican Game !"
+        android:textSize="23dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="210dp"
+        android:textStyle="italic"
+        />
+
+    <TextView
+        android:id="@+id/main_textview_players"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Number of Players :"
+        android:textSize="23dp"
+        android:layout_margin="16dp"
+        android:layout_gravity="center_horizontal"
+        android:textAlignment="center"
+        />
+
+    <EditText
+        android:id="@+id/main_edittext_num"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_gravity="center_horizontal"
+        android:hint="Enter the number of players"
+        />
+
+    <Button
+        android:id="@+id/go_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="16dp"
+        android:text="GO"
+        />
+
+    <Button
+        android:id="@+id/rules_button"
+        android:layout_width="170dp"
+        android:layout_height="wrap_content"
+        android:text="How to play ?"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="100dp"
+        />
+
+    <Button
+        android:id="@+id/about_us_button"
+        android:layout_width="170dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="about us"
+        />
+
+</LinearLayout>
