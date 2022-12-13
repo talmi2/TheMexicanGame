@@ -6,11 +6,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".MainActivity"
-    android:background="@drawable/bg"
+
     >
-
-
-
 
     <TextView
         android:id="@+id/main_textview_greeting"

@@ -2,6 +2,7 @@ package fr.delcey.mexicangame;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.*;
 import android.view.View;
@@ -13,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
 
     TextView mGreetingTextView, mPlayerTextView;
     EditText mNumEditText;
-    Button mPlayButton, mAboutUsButton, mRulesButton ;
+    Button mGoButton, mAboutUsButton, mRulesButton ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,11 +27,11 @@ public class MainActivity extends AppCompatActivity {
 
         mNumEditText = findViewById(R.id.main_edittext_num);
 
-        mPlayButton = findViewById(R.id.go_button);
+        mGoButton = findViewById(R.id.go_button);
         mAboutUsButton = findViewById(R.id.about_us_button);
         mRulesButton = findViewById(R.id.rules_button);
 
-        mPlayButton.setEnabled(false);
+        mGoButton.setEnabled(false);
 
         mNumEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -45,15 +46,27 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                mPlayButton.setEnabled(!s.toString().isEmpty());
+                mGoButton.setEnabled(!s.toString().isEmpty());
 
             }
         });
 
-        mPlayButton.setOnClickListener(new View.OnClickListener() {
+        mGoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                startActivityForResult(new Intent(MainActivity.this,Go.class),5);
+            }
+        });
+        mAboutUsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivityForResult(new Intent(MainActivity.this, AboutUs.class),5);
+            }
+        });
+        mRulesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivityForResult(new Intent(MainActivity.this, Rules.class),5);
             }
         });
 

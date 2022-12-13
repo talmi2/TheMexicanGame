@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".AboutUs"
+    >
+
+    <TextView
+        android:id="@+id/main_textview_about_us"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="The Mexican is a game we use to play during the week-end and that doesn’t exist in the format of an application or on any other kind of online platform. \n
+We were after lunch, talking like usual with a few other friends when one of them suggested to play a little game with a cup and a pair of dice called the Mexican.\n
+ Since then, we play this game often in the week-ends. \n
+This gave us the idea of doing it for our final project because it is a funny tricky game."
+        android:textSize="23dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="210dp"
+        />
+
+
+</LinearLayout>
+
+
