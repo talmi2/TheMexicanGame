@@ -41,6 +41,8 @@
         android:layout_marginEnd="16dp"
         android:layout_gravity="center_horizontal"
         android:hint="Enter the number of players"
+        android:inputType="number"
+        android:digits="0123456789"
         />
 
     <Button

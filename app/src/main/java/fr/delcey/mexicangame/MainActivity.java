@@ -16,6 +16,10 @@ public class MainActivity extends AppCompatActivity {
     EditText mNumEditText;
     Button mGoButton, mAboutUsButton, mRulesButton ;
 
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +35,14 @@ public class MainActivity extends AppCompatActivity {
         mAboutUsButton = findViewById(R.id.about_us_button);
         mRulesButton = findViewById(R.id.rules_button);
 
+
         mGoButton.setEnabled(false);
+
+        String playerNum = mNumEditText.getText().toString();
+
+
+        mNumEditText.setText("");
+
 
         mNumEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -54,7 +65,16 @@ public class MainActivity extends AppCompatActivity {
         mGoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivityForResult(new Intent(MainActivity.this,Go.class),5);
+                String strNumber=mNumEditText.getText().toString().trim();
+                if(TextUtils.isEmpty(strNumber) ||(Integer.parseInt(strNumber) < 1 && Integer.parseInt(strNumber)>9)){
+
+                }
+                else{
+                    Intent intent = new Intent(MainActivity.this,Go.class);
+                    intent.putExtra("numPlayers", strNumber);
+                    startActivityForResult(intent,5);
+                }
+//                    startActivityForResult(new Intent(MainActivity.this,Go.class),5);
             }
         });
         mAboutUsButton.setOnClickListener(new View.OnClickListener() {
