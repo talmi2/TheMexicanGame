@@ -2,6 +2,7 @@ package fr.delcey.mexicangame;
 
 import static fr.delcey.mexicangame.R.id.dice1;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -67,8 +68,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String strNumber=mNumEditText.getText().toString().trim();
-                if(TextUtils.isEmpty(strNumber) ||(Integer.parseInt(strNumber) < 1 && Integer.parseInt(strNumber)>9)){
-
+                if(TextUtils.isEmpty(strNumber) || (Integer.parseInt(strNumber) < 2 || Integer.parseInt(strNumber)>9)){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setTitle("Error");
+                    builder.setMessage("You need yo enter a number between 2 and 9");
+                    builder.setPositiveButton("OK", null);
+                    builder.show();
                 }
                 else{
                     Intent intent = new Intent(MainActivity.this,Go.class);

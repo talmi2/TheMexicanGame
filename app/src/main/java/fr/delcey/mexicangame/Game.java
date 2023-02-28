@@ -15,7 +15,7 @@ public class Game extends AppCompatActivity {
 
     private DBHandler dbHandler;
     private ImageView dice1, dice2;
-    private Button rollButton;
+    private Button rollButton, next_player_button, comeback;
     private EditText playerInput;
     private TextView playerName;
 
@@ -31,6 +31,9 @@ public class Game extends AppCompatActivity {
         rollButton = findViewById(R.id.roll_button);
         playerName = findViewById(R.id.player_name);
         playerInput = findViewById(R.id.main_edittext_num1);
+        next_player_button = findViewById(R.id.next_player);
+        comeback = findViewById(R.id.come_back);
+
 
         rollButton.setOnClickListener(new View.OnClickListener() {
             @Override
