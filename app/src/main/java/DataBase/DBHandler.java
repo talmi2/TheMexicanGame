@@ -1,14 +1,11 @@
 package DataBase;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 import android.database.Cursor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class DBHandler extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "PlayersInfo.db";
@@ -19,6 +16,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
 
     public DBHandler(Context context) {
+
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -49,6 +47,19 @@ public class DBHandler extends SQLiteOpenHelper {
         else
             return true;
     }
+
+    @SuppressLint("Range")
+    public String getPlayerName(int playerId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_NAME, new String[] {KEY_NAME}, null, null, null, null, null);
+        String playerName = null;
+        if (cursor.moveToFirst()) {
+            playerName = cursor.getString(cursor.getColumnIndex(KEY_NAME));
+        }
+        cursor.close();
+        return playerName;
+    }
+
 
     public Integer deleteData(String id){
         SQLiteDatabase db = this.getWritableDatabase();

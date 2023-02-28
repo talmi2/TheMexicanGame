@@ -1,12 +1,17 @@
 package fr.delcey.mexicangame;
 
+import static fr.delcey.mexicangame.R.id.dice1;
+
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.*;
 import android.view.View;
 import android.widget.*;
+
+import java.util.Random;
 
 import fr.delcey.mexicangame.R;
 
@@ -16,10 +21,7 @@ public class MainActivity extends AppCompatActivity {
     EditText mNumEditText;
     Button mGoButton, mAboutUsButton, mRulesButton ;
 
-
-
-
-
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         mNumEditText.setText("");
-
 
         mNumEditText.addTextChangedListener(new TextWatcher() {
             @Override
