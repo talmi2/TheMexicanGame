@@ -3,7 +3,9 @@ package fr.delcey.mexicangame;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -56,14 +58,21 @@ public class Go extends AppCompatActivity {
 
                     if (v instanceof EditText) {
                         EditText editText = (EditText) v;
-                        myDb.insertData(editText.getText().toString());
-
+                        String strName=editText.getText().toString().trim();
+                        if(TextUtils.isEmpty(strName)){
+                            myDb.insertData("Player ", i);
+                        }
+                        else{
+                            myDb.insertData(editText.getText().toString(), i);
+                        }
                     }
                 }
                 startActivityForResult(new Intent(Go.this, Game.class), 5);
 
             }
         });
+
+
 
 
     }

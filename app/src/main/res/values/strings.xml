@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">Mexican game</string>
+    <string name="app_name" parent="Theme.AppCompat.Light.NoActionBar">Mexican game</string>
+
 </resources>

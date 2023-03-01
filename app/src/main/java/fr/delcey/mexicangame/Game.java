@@ -1,8 +1,10 @@
 package fr.delcey.mexicangame;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
@@ -15,10 +17,10 @@ public class Game extends AppCompatActivity {
 
     private DBHandler dbHandler;
     private ImageView dice1, dice2;
-    private Button rollButton, next_player_button, comeback;
+    private Button rollButton, next_player_button, comeback, btnviewAll;
     private EditText playerInput;
     private TextView playerName;
-
+    DBHandler myDb;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -33,7 +35,10 @@ public class Game extends AppCompatActivity {
         playerInput = findViewById(R.id.main_edittext_num1);
         next_player_button = findViewById(R.id.next_player);
         comeback = findViewById(R.id.come_back);
+        btnviewAll = findViewById(R.id.view_all_button);
 
+        myDb = new DBHandler(this);
+        viewAll();
 
         rollButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,5 +100,32 @@ public class Game extends AppCompatActivity {
                 dice2.setImageResource(R.drawable.d_6);
                 break;
         }
+    }
+    public void viewAll(){
+        btnviewAll.setOnClickListener(
+            new View.OnClickListener(){
+                public void onClick(View v) {
+                    Cursor res = myDb.getAllData();
+                    if (res.getCount() == 0) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(Game.this);
+                        builder.setTitle("Error");
+                        builder.setMessage("Nothing found");
+                        builder.setPositiveButton("OK", null);
+                        builder.show();
+                        return;
+                    }
+                    StringBuffer buffer = new StringBuffer();
+                    while (res.moveToNext()) {
+                        buffer.append("Name : " + res.getString(1) + "\n");
+                        buffer.append("Score : " + "5" + "\n");
+                    }
+                    AlertDialog.Builder builder = new AlertDialog.Builder(Game.this);
+                    builder.setTitle("Data");
+                    builder.setMessage(buffer.toString());
+                    builder.setPositiveButton("OK", null);
+                    builder.show();
+                }
+            }
+        );
     }
 }

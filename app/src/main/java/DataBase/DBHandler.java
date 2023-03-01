@@ -37,7 +37,7 @@ public class DBHandler extends SQLiteOpenHelper {
         return db.insert("Players", null, values);
     }
 
-    public boolean insertData(String name){
+    public boolean insertData(String name, int i){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_NAME, name);
@@ -64,5 +64,11 @@ public class DBHandler extends SQLiteOpenHelper {
     public Integer deleteData(String id){
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete(TABLE_NAME, "ID = ?",new String[] {id});
+    }
+
+    public Cursor getAllData() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("select * from " + TABLE_NAME,null);
+        return res;
     }
 }
