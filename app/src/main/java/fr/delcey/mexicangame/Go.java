@@ -71,10 +71,6 @@ public class Go extends AppCompatActivity {
 
             }
         });
-
-
-
-
     }
 
 }
