@@ -1,26 +1,25 @@
 package fr.delcey.mexicangame;
 
-import static fr.delcey.mexicangame.R.id.dice1;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
+
 import android.os.Bundle;
 import android.text.*;
 import android.view.View;
 import android.widget.*;
 
-import java.util.Random;
-
-import fr.delcey.mexicangame.R;
 
 public class MainActivity extends AppCompatActivity {
 
     TextView mGreetingTextView, mPlayerTextView;
     EditText mNumEditText;
     Button mGoButton, mAboutUsButton, mRulesButton ;
+
+
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -40,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         mGoButton.setEnabled(false);
+//        mGoButton.setBackgroundColor(Color.GRAY);
 
         String playerNum = mNumEditText.getText().toString();
 
@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 mGoButton.setEnabled(!s.toString().isEmpty());
-
+//                mGoButton.setBackgroundResource(R.drawable.rond);
             }
         });
 
@@ -80,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra("numPlayers", strNumber);
                     startActivityForResult(intent,5);
                 }
-//                    startActivityForResult(new Intent(MainActivity.this,Go.class),5);
             }
         });
         mAboutUsButton.setOnClickListener(new View.OnClickListener() {
@@ -92,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
         mRulesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 startActivityForResult(new Intent(MainActivity.this, Rules.class),5);
             }
         });
