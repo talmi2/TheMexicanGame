@@ -34,7 +34,7 @@ public class Game extends AppCompatActivity {
         playerName = findViewById(R.id.player_name);
         playerInput = findViewById(R.id.main_edittext_num1);
         next_player_button = findViewById(R.id.next_player);
-        comeback = findViewById(R.id.come_back);
+        comeback = findViewById(R.id.back_button);
         btnviewAll = findViewById(R.id.view_all_button);
 
         myDb = new DBHandler(this);

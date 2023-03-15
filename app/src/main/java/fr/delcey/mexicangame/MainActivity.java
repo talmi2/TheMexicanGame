@@ -4,6 +4,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 
@@ -11,7 +12,6 @@ import android.os.Bundle;
 import android.text.*;
 import android.view.View;
 import android.widget.*;
-
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
 //        mGoButton.setBackgroundColor(Color.GRAY);
 
         String playerNum = mNumEditText.getText().toString();
+
 
 
         mNumEditText.setText("");
@@ -85,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
         mAboutUsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 startActivityForResult(new Intent(MainActivity.this, AboutUs.class),5);
             }
         });
@@ -98,4 +100,5 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
 }

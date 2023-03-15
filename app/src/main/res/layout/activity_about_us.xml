@@ -1,29 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".AboutUs"
     >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
     <TextView
         android:id="@+id/main_textview_about_us"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:text="The Mexican is a game we use to play during the week-end and that doesn’t exist in the format of an application or on any other kind of online platform. \n
-We were after lunch, talking like usual with a few other friends when one of them suggested to play a little game with a cup and a pair of dice called the Mexican.\n
- Since then, we play this game often in the week-ends. \n
-This gave us the idea of doing it for our final project because it is a funny tricky game."
-        android:textSize="23dp"
-        android:layout_gravity="center_horizontal"
+        android:text="Hello everyone !\n\n
+
+We are two software engineering students in the Start-Up nation.
+We developed this application as part of our end-of-study project.
+We used to get together with friends over the weekend, and play classic games with each other.
+One day, a friend told us about a game called &quot;the Mexican Game&quot;, being a game that can be played by adults and children, using only a pair of dice and a cup. Even though the rules may seem complicated, we got hooked on the game right away, and we've been playing it for several years now.
+In reality, this game is not available on any platform, so we decided to create it as an Android application.\n\n
+
+We hope you have as much fun playing this game as we do. Enjoy!\n\n
+
+If you want to send us your comments and impressions about the game, you can contact us via our emails:\n\n
+
+ilanma2906@gmail.com\n
+talmi2@ac.sce.ac.il"
+        android:textSize="24sp"
+        android:gravity="center"
         android:layout_marginTop="60dp"
         android:layout_marginBottom="210dp"
         />
 
+    </LinearLayout>
 
-</LinearLayout>
+</ScrollView>
 
 
