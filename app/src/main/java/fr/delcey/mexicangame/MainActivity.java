@@ -39,11 +39,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         mGoButton.setEnabled(false);
-//        mGoButton.setBackgroundColor(Color.GRAY);
-
-        String playerNum = mNumEditText.getText().toString();
-
-
 
         mNumEditText.setText("");
 
@@ -61,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 mGoButton.setEnabled(!s.toString().isEmpty());
-//                mGoButton.setBackgroundResource(R.drawable.rond);
             }
         });
 
@@ -86,14 +80,12 @@ public class MainActivity extends AppCompatActivity {
         mAboutUsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 startActivityForResult(new Intent(MainActivity.this, AboutUs.class),5);
             }
         });
         mRulesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 startActivityForResult(new Intent(MainActivity.this, Rules.class),5);
             }
         });
