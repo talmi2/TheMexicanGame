@@ -4,6 +4,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 
@@ -11,7 +12,6 @@ import android.os.Bundle;
 import android.text.*;
 import android.view.View;
 import android.widget.*;
-
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,10 +39,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         mGoButton.setEnabled(false);
-//        mGoButton.setBackgroundColor(Color.GRAY);
-
-        String playerNum = mNumEditText.getText().toString();
-
 
         mNumEditText.setText("");
 
@@ -60,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 mGoButton.setEnabled(!s.toString().isEmpty());
-//                mGoButton.setBackgroundResource(R.drawable.rond);
             }
         });
 
@@ -91,11 +86,11 @@ public class MainActivity extends AppCompatActivity {
         mRulesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 startActivityForResult(new Intent(MainActivity.this, Rules.class),5);
             }
         });
 
 
     }
+
 }

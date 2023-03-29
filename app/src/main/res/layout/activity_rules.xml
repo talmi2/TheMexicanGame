@@ -1,40 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:padding="16dp"
-    android:orientation="vertical"
-    tools:context=".Rules">
+    android:layout_height="match_parent">
 
 
-    <TextView
-        android:id="@+id/main_textview_rules"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="16dp"
-        android:text="In reality this game is played with a cup and a pair of dice and each player has a total of 5 points.\n
-There is an order of the score obtained by the dice and a few exceptions, let’s begin by enumerate the order before further explications:\n
-From the smallest to the biggest :3 2 ; 4 1 ; 4 2 ; 4 3 ; 5 1 ; 5 2 ; 5 3 ; 5 4 ; 6 1 ; 6 2 ; 6 3 ; 6 4 ; 6 5 ; 1 1 ; 2 2 ; 3 3 ; 4 4 ; 5 5 ; 6 6 ; 2 1\n
-The few exceptions are :\n
-1) 3 1 which is the joker (further explication after)\n
-2) 2 1 which is the Mexican, the biggest score\n
-The goal is to have a score biggest or even then the player before. Each player has two attempts to roll dice, the first one where only him can see the score and the second one is a blind throw.\n
-The player write  the score he wants to announce on the screen, but he must be greater or equal to the player before, if not he can lie about is score
-The next player, before rolling the dice, can decide to check the veracity of the precedent player, if he don’t reveal it the game continues, and the player roll the dice.\n
-In the other hand if he choose to check the saying of the precedent player and the score is :\n
-1) a smallest score than the one announce, he lose a point.\n
-2) an even or biggest score than the one announce the player who revealed the dice lose a point, and the score of the dice is reset to 3 2.\n
-3) the joker, he need to redo a blind roll and give a score that will be bigger or even that the one he enunciated before, and the game continues with the next player.\n
-When a player is left with 0 points, he as three options:\n
-1) To ask truthfully to a question \n
-2) To do a given action \n
-3) If he is above the age of 18 a third option is given: drink a shot\n
-"
-        android:textAlignment="gravity"
-        android:textSize="25dp" />
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-</ScrollView>
+    <Button
+        android:id="@+id/back_button"
+        android:layout_width="55dp"
+        android:layout_height="44dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/back_arrow"
+        />
+
+</RelativeLayout>

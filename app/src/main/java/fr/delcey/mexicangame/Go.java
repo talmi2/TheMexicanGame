@@ -13,11 +13,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import DataBase.DBHandler;
+import DataBase.Player;
 
 public class Go extends AppCompatActivity {
     private LinearLayout lnrDynamicEditTextHolder;
     DBHandler myDb;
-    Button mStartButton;
+    Button mStartButton, mBackButton;
 
 
     @Override
@@ -26,6 +27,8 @@ public class Go extends AppCompatActivity {
         setContentView(R.layout.activity_go);
 
         mStartButton = findViewById(R.id.play_button);
+        mBackButton = findViewById(R.id.back_button);
+
 
         myDb = new DBHandler(this);
 
@@ -47,6 +50,13 @@ public class Go extends AppCompatActivity {
 
         }
 
+        mBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                startActivityForResult(new Intent(Go.this, MainActivity.class),5);
+            }
+        });
         mStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -58,12 +68,15 @@ public class Go extends AppCompatActivity {
 
                     if (v instanceof EditText) {
                         EditText editText = (EditText) v;
-                        String strName=editText.getText().toString().trim();
+                        String strName = editText.getText().toString().trim();
                         if(TextUtils.isEmpty(strName)){
-                            myDb.insertData("Player ", i);
+                            Player newPlayer = new Player(i,"Player ", 5);
+                            myDb.insertData(newPlayer);
                         }
                         else{
-                            myDb.insertData(editText.getText().toString(), i);
+                            Player newPlayer = new Player(i,editText.getText().toString(), 5);
+                            myDb.insertData(newPlayer);
+
                         }
                     }
                 }
@@ -71,6 +84,7 @@ public class Go extends AppCompatActivity {
 
             }
         });
+
     }
 
 }

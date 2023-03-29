@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="@color/mexico_green"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:id="@+id/main_textview_greeting"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="Scoring"
+        android:textSize="50dp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="210dp"
+        android:textStyle="italic|bold"
+
+
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="The dice with the highest value is multiplied by 10, then added to
+	the value of the second dice.\n\n
+	Here is the order of values from smallest to largest:\n\n
+
+	32 &lt; 41 &lt; 42 &lt; 43 &lt; 51 &lt; 52 &lt; 53 &lt; 54 &lt; 61 &lt; 62 &lt; 63 &lt; 64 &lt; 65 &lt; 11 &lt; 22 &lt; 33 &lt; 44 &lt; 55 &lt; 66 &lt; 21 "
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:textSize="28sp"
+        android:textColor="@android:color/black"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/textView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Swipe left to\nPrev Page"
+        android:layout_gravity="center_horizontal"
+        android:textSize="20sp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        android:minLines="2"
+        android:id="@+id/textView2"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Swipe right to\nNext Page"
+        android:layout_gravity="center_horizontal"
+        android:textSize="20sp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        android:minLines="2"
+        android:id="@+id/textView3"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+</RelativeLayout>

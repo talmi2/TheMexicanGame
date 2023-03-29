@@ -9,10 +9,11 @@ import android.database.Cursor;
 
 public class DBHandler extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "PlayersInfo.db";
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String TABLE_NAME = "Players_table"; // Name of the Table...
     public static final String KEY_ID = "ID";// Column1 of the table
     public static final String KEY_NAME = "NAME";// Column2 of the table
+    public static final String KEY_SCORE = "SCORE"; // Column 3 of the table
 
 
     public DBHandler(Context context) {
@@ -21,9 +22,9 @@ public class DBHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-//        String sql = "CREATE TABLE Players (name TEXT PRIMARY KEY)";
-        db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT)");
+        db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SCORE INTEGER)" );
     }
+
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -36,33 +37,41 @@ public class DBHandler extends SQLiteOpenHelper {
         return db.insert("Players", null, values);
     }
 
-    public boolean insertData(String name, int i){
+    public boolean insertData(Player player) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(KEY_NAME, name);
-        long result = db.insert(TABLE_NAME,null, contentValues);
+        contentValues.put(KEY_NAME, player.getName());
+        contentValues.put(KEY_SCORE, player.getScore());
+        long result = db.insert(TABLE_NAME, null, contentValues);
         if(result == -1)
             return false;
         else
             return true;
     }
 
+
     @SuppressLint("Range")
-    public String getPlayerName(int playerId) {
+    public Player getPlayerName(int playerId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_NAME, new String[] {KEY_NAME}, null, null, null, null, null);
-        String playerName = null;
+        String[] projection = {KEY_NAME, KEY_SCORE};
+        String selection = KEY_ID + "=?";
+        String[] selectionArgs = {String.valueOf(playerId)};
+        Cursor cursor = db.query(TABLE_NAME, projection, selection, selectionArgs, null, null, null);
+        Player player = null;
         if (cursor.moveToFirst()) {
-            playerName = cursor.getString(cursor.getColumnIndex(KEY_NAME));
+            String playerName = cursor.getString(cursor.getColumnIndex(KEY_NAME));
+            int playerScore = cursor.getInt(cursor.getColumnIndex(KEY_SCORE));
+            player = new Player(playerId, playerName, playerScore);
         }
         cursor.close();
-        return playerName;
+        return player;
     }
 
 
-    public Integer deleteData(String id){
+
+    public Integer deleteData(){
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(TABLE_NAME, "ID = ?",new String[] {id});
+        return db.delete(TABLE_NAME, null,null);
     }
 
     public Cursor getAllData() {
@@ -71,3 +80,4 @@ public class DBHandler extends SQLiteOpenHelper {
         return res;
     }
 }
+
