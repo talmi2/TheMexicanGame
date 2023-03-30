@@ -45,7 +45,7 @@ public class Go extends AppCompatActivity {
             EditText mPlayerName = new EditText(Go.this);
             mPlayerName.setId(1 + i);
             mPlayerName.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            mPlayerName.setHint("numPlayers " + (i + 1));
+            mPlayerName.setHint("Players " + (i + 1));
             lnrDynamicEditTextHolder.addView(mPlayerName);
 
         }
@@ -71,16 +71,19 @@ public class Go extends AppCompatActivity {
                         String strName = editText.getText().toString().trim();
                         if(TextUtils.isEmpty(strName)){
                             Player newPlayer = new Player(i,"Player ", 5);
-                            myDb.insertData(newPlayer);
+                            myDb.insertData(newPlayer, i+1);
                         }
                         else{
                             Player newPlayer = new Player(i,editText.getText().toString(), 5);
-                            myDb.insertData(newPlayer);
+                            myDb.insertData(newPlayer, i+1);
 
                         }
                     }
                 }
-                startActivityForResult(new Intent(Go.this, Game.class), 5);
+                Intent intent = new Intent(Go.this, Game.class);
+                intent.putExtra("numberPlayers", childCount);
+
+                startActivityForResult(intent, 5);
 
             }
         });

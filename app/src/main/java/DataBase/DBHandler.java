@@ -8,12 +8,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.Cursor;
 
 public class DBHandler extends SQLiteOpenHelper {
-    public static final String DATABASE_NAME = "PlayersInfo.db";
+    public static final String DATABASE_NAME = "Player_info.db";
     public static final int DATABASE_VERSION = 2;
     public static final String TABLE_NAME = "Players_table"; // Name of the Table...
     public static final String KEY_ID = "ID";// Column1 of the table
     public static final String KEY_NAME = "NAME";// Column2 of the table
     public static final String KEY_SCORE = "SCORE"; // Column 3 of the table
+
 
 
     public DBHandler(Context context) {
@@ -23,6 +24,9 @@ public class DBHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SCORE INTEGER)" );
+
+        db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" + TABLE_NAME + "'");
+
     }
 
 
@@ -32,51 +36,53 @@ public class DBHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public long insertUser(ContentValues values) {
-        SQLiteDatabase db = getWritableDatabase();
-        return db.insert("Players", null, values);
-    }
 
-    public boolean insertData(Player player) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(KEY_NAME, player.getName());
-        contentValues.put(KEY_SCORE, player.getScore());
-        long result = db.insert(TABLE_NAME, null, contentValues);
-        if(result == -1)
-            return false;
-        else
-            return true;
+    public boolean insertData(Player player, int i) {
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(KEY_NAME, player.getName());
+            contentValues.put(KEY_SCORE, player.getScore());
+
+            int rowsAffected = db.update(TABLE_NAME, contentValues, KEY_ID + " = ?", new String[] { String.valueOf(i) });
+            return (rowsAffected > 0);
     }
 
 
     @SuppressLint("Range")
     public Player getPlayerName(int playerId) {
+            SQLiteDatabase db = this.getReadableDatabase();
+            String[] projection = {KEY_ID, KEY_NAME, KEY_SCORE};
+            Cursor cursor = db.query(TABLE_NAME, projection, null, null, null, null, KEY_ID + " ASC", "1");
+            Player player = null;
+            if (cursor.moveToFirst()) {
+                playerId = cursor.getInt(cursor.getColumnIndex(KEY_ID));
+                String playerName = cursor.getString(cursor.getColumnIndex(KEY_NAME));
+                int playerScore = cursor.getInt(cursor.getColumnIndex(KEY_SCORE));
+                player = new Player(playerId, playerName, playerScore);
+            }
+            cursor.close();
+            return player;
+    }
+
+    @SuppressLint("Range")
+    public Player getNextPlayerId(int currentPlayerId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] projection = {KEY_NAME, KEY_SCORE};
-        String selection = KEY_ID + "=?";
-        String[] selectionArgs = {String.valueOf(playerId)};
-        Cursor cursor = db.query(TABLE_NAME, projection, selection, selectionArgs, null, null, null);
-        Player player = null;
+        Cursor cursor = db.rawQuery("SELECT * FROM " +TABLE_NAME + " WHERE " + KEY_ID + "> ? LIMIT 1", new String[]{String.valueOf(currentPlayerId)});
+        Player nextPlayer = null;
         if (cursor.moveToFirst()) {
-            String playerName = cursor.getString(cursor.getColumnIndex(KEY_NAME));
-            int playerScore = cursor.getInt(cursor.getColumnIndex(KEY_SCORE));
-            player = new Player(playerId, playerName, playerScore);
+            int id = cursor.getInt(cursor.getColumnIndex(KEY_ID));
+            String name = cursor.getString(cursor.getColumnIndex(KEY_NAME));
+            int score = cursor.getInt(cursor.getColumnIndex(KEY_SCORE));
+            nextPlayer = new Player(id, name, score);
         }
         cursor.close();
-        return player;
+        db.close();
+        return nextPlayer;
     }
 
-
-
-    public Integer deleteData(){
+    public Cursor getAllData(int i) {
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(TABLE_NAME, null,null);
-    }
-
-    public Cursor getAllData() {
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("select * from " + TABLE_NAME,null);
+        Cursor res = db.rawQuery("select * from " + TABLE_NAME + " LIMIT " + i,null);
         return res;
     }
 }

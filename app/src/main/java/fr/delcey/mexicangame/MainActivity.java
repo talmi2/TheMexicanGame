@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         mGoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String strNumber=mNumEditText.getText().toString().trim();
+                String strNumber = mNumEditText.getText().toString().trim();
                 if(TextUtils.isEmpty(strNumber) || (Integer.parseInt(strNumber) < 2 || Integer.parseInt(strNumber)>9)){
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder.setTitle("Error");

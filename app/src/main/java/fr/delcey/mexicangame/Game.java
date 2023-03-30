@@ -6,14 +6,18 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.*;
 
+import java.util.List;
 import java.util.Random;
 
 import DataBase.DBHandler;
@@ -21,12 +25,15 @@ import DataBase.Player;
 
 public class Game extends AppCompatActivity {
 
-    private DBHandler dbHandler;
     private ImageView dice1, dice2;
-    private Button rollButton, next_player_button, comeback, btnviewAll, roll_again, end_button, mBackButton;
+    private Button rollButton, next_player_button, comeback, btnviewAll, roll_again, mBackButton, mReveal;
     private EditText playerInput;
     private TextView playerName;
     DBHandler myDb;
+    private Drawable previousDice1;
+    private Drawable previousDice2;
+    int currentPlayerId = 1 ;
+
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -43,9 +50,8 @@ public class Game extends AppCompatActivity {
         comeback = findViewById(R.id.back_button);
         btnviewAll = findViewById(R.id.view_all_button);
         roll_again = findViewById(R.id.roll_again);
-        end_button = findViewById(R.id.end_game);
         mBackButton = findViewById(R.id.back_button);
-
+        mReveal = findViewById(R.id.print_game);
 
         final int[] scoring = {32, 41, 42 ,43, 51, 52, 53, 54, 61, 62, 63, 64, 65, 11, 22, 33, 44, 55, 66, 21};
 
@@ -54,7 +60,15 @@ public class Game extends AppCompatActivity {
 
         myDb = new DBHandler(this);
         viewAll();
-        DeleteData();
+
+        Player player = myDb.getPlayerName(currentPlayerId);
+        currentPlayerId = player.getId();
+
+
+        playerName = findViewById(R.id.player_name);
+        playerName.setText(player.getName() + " - " + player.getScore());
+
+
 
 
         mBackButton.setOnClickListener(new View.OnClickListener() {
@@ -69,7 +83,11 @@ public class Game extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 rollDice();
+                // save the current image of dice1
+                previousDice1 = dice1.getDrawable();
 
+                // save the current image of dice2
+                previousDice2 = dice2.getDrawable();
                 roll_again.setEnabled(true);
                 rollButton.setEnabled(false);
 
@@ -80,16 +98,18 @@ public class Game extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 rollDice();
+                // save the current image of dice1
+                previousDice1 = dice1.getDrawable();
+
+                // save the current image of dice2
+                previousDice2 = dice2.getDrawable();
+                dice1.setVisibility(View.INVISIBLE);
+                dice2.setVisibility(View.INVISIBLE);
                 roll_again.setEnabled(false);
+
 
             }
         });
-        dbHandler = new DBHandler(this);
-        playerName = findViewById(R.id.player_name);
-
-        int playerId = 1;
-        Player player = dbHandler.getPlayerName(playerId);
-//        playerName.setText(player.getName());
 
         playerInput.addTextChangedListener(new TextWatcher() {
             @Override
@@ -107,7 +127,7 @@ public class Game extends AppCompatActivity {
                 next_player_button.setEnabled(!s.toString().isEmpty());
                 if (!s.toString().isEmpty()) {
                     int input = Integer.parseInt(s.toString());
-                    int lastOrder = 32;
+                    int lastOrder = scoring[0];
                     if (input < lastOrder) {
                         playerInput.setError("the score must be greater than or equal to that of the previous player  " + lastOrder);
                     }
@@ -126,10 +146,47 @@ public class Game extends AppCompatActivity {
                     builder.show();
                 }
                 else{
-                    Intent intent = new Intent(Game.this,Game.class);
+
+                    dice1.setImageDrawable(previousDice1);
+
+                    // set the image of dice2 to the previous image
+                    dice2.setImageDrawable(previousDice2);;
+
+                    dice1.setVisibility(View.INVISIBLE);
+                    dice2.setVisibility(View.INVISIBLE);
+
+                        rollButton.setEnabled(true);
+                        roll_again.setEnabled(false);
+
+                        nextPlayer();
+                        // Add the player ID as an extra to the Intent
+                        Intent intent = new Intent(Game.this, Game.class);
+
+//                    } else { // If there is no player with the next ID in the database, show an error message
+//                        Toast.makeText(Game.this, "No more players", Toast.LENGTH_SHORT).show();
+////                        currentPlayerId--; // decrement current player ID as there are no more players
+//                    }
+
 //                    intent.putExtra("numPlayers", strNumber);
 //                    startActivityForResult(intent,5);
                 }
+
+//                Intent intent = new Intent(Game.this,Game.class);
+
+            }
+        });
+        mReveal.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+
+                dice1.setVisibility(View.VISIBLE);
+                dice2.setVisibility(View.VISIBLE);
+
+                dice1.setImageDrawable(previousDice1);
+
+                // set the image of dice2 to the previous image
+                dice2.setImageDrawable(previousDice2);
+
             }
         });
     }
@@ -181,36 +238,13 @@ public class Game extends AppCompatActivity {
         }
     }
 
-    public  void DeleteData(){
-        end_button.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                       Integer d =  dbHandler.deleteData();
-                       if (d > 0 ){
-                            AlertDialog.Builder builder = new AlertDialog.Builder(Game.this);
-                            builder.setTitle("Error");
-                            builder.setMessage("Data delete");
-                            builder.setPositiveButton("OK", null);
-                            builder.show();
-                        }
-                       else {
-                           AlertDialog.Builder builder = new AlertDialog.Builder(Game.this);
-                           builder.setTitle("Error");
-                           builder.setMessage("Data NOT delete");
-                           builder.setPositiveButton("OK", null);
-                           builder.show();
-                       }
-
-                    }
-                }
-        );
-    }
     public void viewAll(){
         btnviewAll.setOnClickListener(
             new View.OnClickListener(){
                 public void onClick(View v) {
-                    Cursor res = myDb.getAllData();
+                    Intent intent = getIntent();
+                    int count = intent.getIntExtra("numberPlayers",0);
+                    Cursor res = myDb.getAllData(count);
                     if (res.getCount() == 0) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(Game.this);
                         builder.setTitle("Error");
@@ -235,4 +269,22 @@ public class Game extends AppCompatActivity {
             }
         );
     }
+    public void nextPlayer(){
+        Player player = myDb.getPlayerName(currentPlayerId);
+        Player nextPlayer = myDb.getNextPlayerId(currentPlayerId);
+        Intent intent = getIntent();
+        int count = intent.getIntExtra("numberPlayers",0);
+
+        if (currentPlayerId == count){
+            currentPlayerId = 1;
+            playerName.setText(player.getName() + " - " + player.getScore());
+        }
+        else{
+            currentPlayerId = (currentPlayerId + 1);
+            currentPlayerId = nextPlayer.getId();
+            playerName.setText(nextPlayer.getName() + " - " + nextPlayer.getScore());
+
+        }
+    }
+
 }

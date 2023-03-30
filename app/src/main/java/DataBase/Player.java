@@ -12,14 +12,14 @@ public class Player {
         }
 
         public int getId() {
-            return id;
+            return this.id;
         }
 
         public String getName() {
-            return name;
+            return this.name;
         }
 
         public int getScore() {
-            return score;
+            return this.score;
         }
 }

@@ -67,6 +67,7 @@
         android:background="@drawable/round_red"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="100dp"
+        android:textColor="@android:color/white"
         />
 
     <Button
@@ -77,6 +78,7 @@
         android:layout_gravity="center_horizontal"
         android:text="about us"
         android:layout_marginTop="10dp"
+        android:textColor="@android:color/white"
         />
 
 

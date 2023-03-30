@@ -1,5 +1,6 @@
-package com.ilan.truthordare;
+package fr.delcey.mexicangame;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
@@ -104,7 +105,7 @@ public class TruthOrDare extends AppCompatActivity {
         iDidItButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                Toast iDidItToast = Toast.makeText(TruthOrDare.this, "Awesome! You can return to the game!", Toast.LENGTH_LONG);
+                Toast iDidItToast = Toast.makeText(TruthOrDare.this, "Awesome! You can return to the game!", Toast.LENGTH_SHORT);
                 iDidItToast.setGravity(Gravity.CENTER_VERTICAL | Gravity.START, 500, 500);
                 iDidItToast.show();
 
@@ -114,16 +115,17 @@ public class TruthOrDare extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-
+                        Intent intent = new Intent(TruthOrDare.this,Game.class);
+                        startActivityForResult(intent,5);
                     }
-                }, 3500);
+                }, 2000);
             }
         });
 
         iDidntDoItButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                Toast didntDoItToast = Toast.makeText(TruthOrDare.this, "Too bad! You're eliminated!", Toast.LENGTH_LONG);
+                Toast didntDoItToast = Toast.makeText(TruthOrDare.this, "Too bad! You're eliminated!", Toast.LENGTH_SHORT);
                 didntDoItToast.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL, 0, 0);
                 didntDoItToast.show();
 
@@ -133,9 +135,11 @@ public class TruthOrDare extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        Intent intent = new Intent(TruthOrDare.this,Game.class);
+                        startActivityForResult(intent,5);
 
                     }
-                }, 3500);
+                }, 2000);
             }
         });
     }
@@ -146,3 +150,4 @@ public class TruthOrDare extends AppCompatActivity {
         promptTextView.setText(prompts[index]);
     }
 }
+
