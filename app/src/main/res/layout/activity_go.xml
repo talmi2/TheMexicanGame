@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/beige"
     tools:context=".Go">
 
     <Button
@@ -17,6 +18,14 @@
         android:background="@drawable/back_arrow"
         />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="30sp"
+        android:layout_gravity="center_horizontal"
+        android:text="Enter Player Names:"
+        android:textStyle="bold"
+        />
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -37,7 +46,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="16dp"
-        android:text="Let's began"
+        android:background="@android:color/transparent"
+
+        android:text="Star game"
         />
 
 

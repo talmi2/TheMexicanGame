@@ -13,6 +13,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Random;
 
+import DataBase.DBHandler;
+import DataBase.Player;
+
 public class TruthOrDare extends AppCompatActivity {
 
     private Button truthButton;
@@ -20,6 +23,9 @@ public class TruthOrDare extends AppCompatActivity {
     private TextView promptTextView;
     private Button iDidItButton;
     private Button iDidntDoItButton;
+
+    DBHandler myDb;
+
 
     private final String[] truthPrompts = {
             "What is your biggest fear?",
@@ -80,6 +86,15 @@ public class TruthOrDare extends AppCompatActivity {
         iDidItButton.setEnabled(false);
         iDidntDoItButton.setEnabled(false);
 
+        myDb = new DBHandler(this);
+        Intent intent = getIntent();
+        int currentId = intent.getIntExtra("PlayerId",0);
+
+
+
+        Player player = myDb.getPlayerName(currentId);
+        //currentId = player.getId();
+
         truthButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,7 +130,13 @@ public class TruthOrDare extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        int currentScore = myDb.getPlayerScore(currentId);
+                        currentScore ++ ;
+                        myDb.updatePlayerScore(currentId, currentScore);
+                        myDb.updatePlayerStatus(currentId, true);
+
                         Intent intent = new Intent(TruthOrDare.this,Game.class);
+                        intent.putExtra("hasSecondChance", true);
                         startActivityForResult(intent,5);
                     }
                 }, 2000);

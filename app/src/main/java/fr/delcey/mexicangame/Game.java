@@ -39,6 +39,7 @@ public class Game extends AppCompatActivity {
     int currentScore = 1;
 
 
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,11 +58,6 @@ public class Game extends AppCompatActivity {
         mBackButton = findViewById(R.id.back_button);
         mReveal = findViewById(R.id.print_game);
 
-//        InputFilter[] filters = new InputFilter[1];
-//        filters[0] = new InputFilter.LengthFilter(2);
-//        playerInput.setFilters(filters);
-
-        //int[] scoring = {32, 41, 42 ,43, 51, 52, 53, 54, 61, 62, 63, 64, 65, 11, 22, 33, 44, 55, 66, 21};
 
 
         next_player_button.setEnabled(false);
@@ -72,6 +68,7 @@ public class Game extends AppCompatActivity {
 
         Player player = myDb.getPlayerName(currentPlayerId);
         currentPlayerId = player.getId();
+
 
 
         playerName = findViewById(R.id.player_name);
@@ -103,6 +100,22 @@ public class Game extends AppCompatActivity {
                 // save the current image of dice2
                 previousDice2 = dice2.getDrawable();
 
+                int[] actual = getDiceScore(previousDice1, previousDice2);
+
+                if(actual[0] > actual[1]){
+                    dice1.setImageDrawable(previousDice1);
+
+                    // set the image of dice2 to the previous image
+                    dice2.setImageDrawable(previousDice2);
+                }
+                else{
+                    dice1.setImageDrawable(previousDice2);
+
+                    // set the image of dice2 to the previous image
+                    dice2.setImageDrawable(previousDice1);
+                }
+                dice1.setVisibility(View.VISIBLE);
+                dice2.setVisibility(View.VISIBLE);
 
                 roll_again.setEnabled(true);
                 rollButton.setEnabled(false);
@@ -155,9 +168,9 @@ public class Game extends AppCompatActivity {
                         if (score < score_previous_player) {
                             playerInput.setError("the score must be greater than or equal to that of the previous player " + getScore(score_previous_player));
                         }
-//                        else if(score_previous_player == 21){
+//                      else if(score_previous_player == 21){
 //                            joker
-//                        }
+//                      }
 //                        else if(score_previous_player == 20){
 //                            mexicain
 //                        }
@@ -169,14 +182,6 @@ public class Game extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String strNumber = playerInput.getText().toString().trim();
-                if(TextUtils.isEmpty(strNumber)){
-                    AlertDialog.Builder builder = new AlertDialog.Builder(Game.this);
-                    builder.setTitle("Error");
-                    builder.setMessage("You need yo enter a number between 2 and 9");
-                    builder.setPositiveButton("OK", null);
-                    builder.show();
-                }
-                else{
 
                     int[] actual = getDiceScore(previousDice1, previousDice2);
 
@@ -199,23 +204,16 @@ public class Game extends AppCompatActivity {
                     rollButton.setEnabled(true);
                     roll_again.setEnabled(false);
                     mReveal.setEnabled(true);
+                    next_player_button.setEnabled(false);
 
+                    // Get the list of active players (excluding the eliminated player)
 
                     nextPlayer();
+
                     // Add the player ID as an extra to the Intent
                     Intent intent = new Intent(Game.this, Game.class);
                     currentScore = calculateScore(strNumber);
                     intent.putExtra("Score", currentScore);
-
-//                    } else { // If there is no player with the next ID in the database, show an error message
-//                        Toast.makeText(Game.this, "No more players", Toast.LENGTH_SHORT).show();
-////                        currentPlayerId--; // decrement current player ID as there are no more players
-//                    }
-
-//
-                }
-
-
             }
         });
         mReveal.setOnClickListener(new View.OnClickListener(){
@@ -243,43 +241,42 @@ public class Game extends AppCompatActivity {
 
                 String p = String.valueOf(actual[0]) + String.valueOf(actual[1]);
                 int c = calculateScore(p);
-//                Intent intent = getIntent();
-//                // receive the value by getStringExtra() method and
-//                // key must be same which is send by first activity
-//                int str = intent.getIntExtra("Score",currentScore);
 
                 String s = playerInput.getText().toString().trim();
-                //int score_previous_player = str;
                 int input = Integer.parseInt(s);
                 int score = calculateScore(String.valueOf(input));
 
-                if(c <= score){
+                if(c <= score && c != 21){
                     subtractPointFromPlayer(currentPlayerId);
-
-                    System.out.println(" c moi " + currentPlayerId);
-                    String toast = player.getName() + " actu lost a point";
-                    System.out.println(player.getName());
+                    String current_player_name = myDb.getCurrentPlayerName(currentPlayerId);
+                    String toast = current_player_name + " lost a point";
+                    int updatedScore = myDb.getPlayerScore(currentPlayerId);
+                    playerName.setText(current_player_name + " - " + updatedScore);
                     Toast.makeText(Game.this, toast, Toast.LENGTH_SHORT).show();
                 }
-                else if(c > score){
-                    //Player prev_player = myDb.getPreviousPlayerId(currentPlayerId);
+                else if(c > score && c != 21){
 
-
-                    String toast = player.getName() + " prev lost a point";
+                    String toast = player.getName() + " lost a point";
                     Toast.makeText(Game.this, toast, Toast.LENGTH_SHORT).show();
                     currentPlayerId = (currentPlayerId - 1);
                     subtractPointFromPlayer(currentPlayerId);
-
-
-                    playerName.setText(player.getName() + " - " + player.getScore());
+                    int updatedScore = myDb.getPlayerScore(currentPlayerId);
+                    playerName.setText(player.getName() + " - " + updatedScore);
 
                     Intent intent = new Intent(Game.this, Game.class);
                 }
+                else if(c == 21 ){
+                    String toast = player.getName() + " you add a joker, replay";
+                    Toast.makeText(Game.this, toast, Toast.LENGTH_SHORT).show();
+                    currentPlayerId = (currentPlayerId - 1);
+                    playerName.setText(player.getName() + " - " + player.getScore());
 
+                    Intent intent = new Intent(Game.this, Game.class);
 
+                }
+                System.out.println(c + " coucou je suis chiant");
 
-                System.out.println("c mon score ancien " + c + " mon nouveau "+ score);
-
+                mReveal.setEnabled(false);
             }
         });
     }
@@ -287,28 +284,72 @@ public class Game extends AppCompatActivity {
         // Get the current score of the player
         int currentScore = myDb.getPlayerScore(playerId);
 
-
         // Subtract 1 from the score
         int newScore = currentScore - 1;
         // Update the player's score in the database
         myDb.updatePlayerScore(playerId, newScore);
         if(newScore == 0){
-            AlertDialog.Builder builder = new AlertDialog.Builder(Game.this);
-            builder.setTitle("You lost")
-                    .setMessage("Would you like a last chance?")
-                    .setPositiveButton("Yes, pleas", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            Intent intent = new Intent(Game.this, TruthOrDare.class);
-                            startActivityForResult(intent,5);
-                        }
-                    })
-                    .setNegativeButton("No, thank you", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            Intent intent = new Intent(Game.this, Game.class);
-                        }
-                    });
-            AlertDialog dialog = builder.create();
-            dialog.show();
+
+            boolean hasSecondChance = getIntent().getBooleanExtra("hasSecondChance", false);
+            if(hasSecondChance){
+                myDb.updatePlayerStatus(currentPlayerId, false);
+                String eliminatedPlayer = myDb.getCurrentPlayerName(currentPlayerId);
+                String toast = eliminatedPlayer + " has been eliminated!";
+                Toast.makeText(Game.this, toast, Toast.LENGTH_SHORT).show();
+
+                // Get the list of active players (excluding the eliminated player)
+                List<Player> activePlayers = myDb.getActivePlayers(false);
+                for (Player player : activePlayers) {
+                    nextPlayer();
+                    player = myDb.getPlayerName(currentPlayerId);
+
+                    playerName.setText(player.getName() + " - " + player.getScore());
+                }
+
+                Intent intent = new Intent(Game.this, Game.class);
+                startActivity(intent);
+                nextPlayer();
+
+
+            }
+            else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(Game.this);
+                builder.setTitle("You lost")
+                        .setMessage("Would you like a last chance?")
+                        .setPositiveButton("Yes, pleas", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent intent = new Intent(Game.this, TruthOrDare.class);
+                                intent.putExtra("PlayerId", playerId);
+                                intent.putExtra("hasSecondChance", true);
+                                startActivityForResult(intent, 5);
+                            }
+                        })
+                        .setNegativeButton("No, thank you", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // Update the status of the eliminated player to inactive
+                                myDb.updatePlayerStatus(currentPlayerId, false);
+                                String eliminatedPlayer = myDb.getCurrentPlayerName(currentPlayerId);
+                                String toast = eliminatedPlayer + " has been eliminated!";
+                                Toast.makeText(Game.this, toast, Toast.LENGTH_SHORT).show();
+
+                                // Get the list of active players (excluding the eliminated player)
+                                List<Player> activePlayers = myDb.getActivePlayers(false);
+                                for (Player player : activePlayers) {
+                                    nextPlayer();
+                                    player = myDb.getPlayerName(currentPlayerId);
+
+                                    playerName.setText(player.getName() + " - " + player.getScore());
+                                }
+
+                                Intent intent = new Intent(Game.this, Game.class);
+                                startActivity(intent);
+
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.setCancelable(false); // Set the dialog to be non-cancelable
+                dialog.show();
+            }
         }
 
 
@@ -488,9 +529,6 @@ public class Game extends AppCompatActivity {
         }
     }
 
-
-
-
     public void viewAll(){
         btnviewAll.setOnClickListener(
             new View.OnClickListener(){
@@ -522,22 +560,61 @@ public class Game extends AppCompatActivity {
             }
         );
     }
+
+//    public void nextPlayer(){
+//        Player player = myDb.getPlayerName(currentPlayerId);
+//        Player nextPlayer = myDb.getNextActivePlayer(currentPlayerId);
+//        Intent intent = getIntent();
+//        int count = intent.getIntExtra("numberPlayers",0);
+//
+//        List<Player> activePlayers = myDb.getActivePlayers(false);
+//        if (activePlayers.size() == 1) {
+//            Player winner = activePlayers.get(0);
+//            Toast.makeText(Game.this, winner.getName() + " has won the game!", Toast.LENGTH_LONG).show();
+//        }
+//       else if (currentPlayerId == count){
+//            currentPlayerId = 1;
+//            int updatedScore = myDb.getPlayerScore(currentPlayerId);
+//            playerName.setText(player.getName() + " - " + updatedScore);
+//
+//        }
+//        else{
+//            currentPlayerId = (currentPlayerId + 1);
+//            System.out.println("player: " + nextPlayer);
+//
+//            currentPlayerId = nextPlayer.getId();
+//            playerName.setText(nextPlayer.getName() + " - " + nextPlayer.getScore());
+//
+//        }
+//
+//    }
     public void nextPlayer(){
         Player player = myDb.getPlayerName(currentPlayerId);
-        Player nextPlayer = myDb.getNextPlayerId(currentPlayerId);
+        if (player == null) {
+            // The current player has already been eliminated, skip over them
+            currentPlayerId = myDb.getNextActivePlayer(currentPlayerId).getId();
+            player = myDb.getPlayerName(currentPlayerId);
+        }
+        Player nextPlayer = myDb.getNextActivePlayer(currentPlayerId);
         Intent intent = getIntent();
         int count = intent.getIntExtra("numberPlayers",0);
 
+
         if (currentPlayerId == count){
             currentPlayerId = 1;
-            playerName.setText(player.getName() + " - " + player.getScore());
+            int updatedScore = myDb.getPlayerScore(currentPlayerId);
+            playerName.setText(player.getName() + " - " + updatedScore);
         }
-        else{
-            currentPlayerId = (currentPlayerId + 1);
+        else if (nextPlayer != null) {
             currentPlayerId = nextPlayer.getId();
             playerName.setText(nextPlayer.getName() + " - " + nextPlayer.getScore());
-
+        }
+        List<Player> activePlayers = myDb.getActivePlayers(false);
+        if (activePlayers.size() == 1 && nextPlayer == null) {
+            Player winner = activePlayers.get(0);
+            Toast.makeText(Game.this, winner.getName() + " has won the game!", Toast.LENGTH_LONG).show();
         }
     }
+
 
 }

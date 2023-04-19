@@ -4,12 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.Image;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import DataBase.DBHandler;
@@ -19,6 +21,8 @@ public class Go extends AppCompatActivity {
     private LinearLayout lnrDynamicEditTextHolder;
     DBHandler myDb;
     Button mStartButton, mBackButton;
+    ImageView imageView;
+
 
 
     @Override
@@ -28,6 +32,8 @@ public class Go extends AppCompatActivity {
 
         mStartButton = findViewById(R.id.play_button);
         mBackButton = findViewById(R.id.back_button);
+
+
 
 
         myDb = new DBHandler(this);
@@ -41,12 +47,31 @@ public class Go extends AppCompatActivity {
 
         lnrDynamicEditTextHolder = (LinearLayout) findViewById(R.id.lnrDynamicEditTextHolder);
 
+
         for (int i = 0; i < number_of_editText; i++) {
+            LinearLayout linearLayout = new LinearLayout(Go.this);
+            linearLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+
             EditText mPlayerName = new EditText(Go.this);
             mPlayerName.setId(1 + i);
-            mPlayerName.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            LinearLayout.LayoutParams playerNameParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f); // Set the width to 0, weight to 1
+            mPlayerName.setLayoutParams(playerNameParams);
             mPlayerName.setHint("Players " + (i + 1));
-            lnrDynamicEditTextHolder.addView(mPlayerName);
+            linearLayout.addView(mPlayerName);
+
+            ImageView imageView = new ImageView(Go.this);
+            LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(100, 100, 0f); // Set the width and height to 100 pixels, weight to 0
+            imageView.setLayoutParams(imageParams);
+            imageView.setImageResource(R.drawable.gamer);
+            linearLayout.addView(imageView);
+
+            lnrDynamicEditTextHolder.addView(linearLayout);
+
+
+
+
+//          lnrDynamicEditTextHolder.addView(mPlayerName);
 
         }
 
@@ -66,15 +91,16 @@ public class Go extends AppCompatActivity {
                 for (int i = 0; i < childCount; i++) {
                     View v = lnrDynamicEditTextHolder.getChildAt(i);
 
-                    if (v instanceof EditText) {
-                        EditText editText = (EditText) v;
+                    if (v instanceof LinearLayout) {
+                        EditText editText = (EditText) ((LinearLayout) v).getChildAt(0);
                         String strName = editText.getText().toString().trim();
+
                         if(TextUtils.isEmpty(strName)){
-                            Player newPlayer = new Player(i,"Player ", 5);
+                            Player newPlayer = new Player(i,"Player ", 5, true);
                             myDb.insertData(newPlayer, i+1);
                         }
                         else{
-                            Player newPlayer = new Player(i,editText.getText().toString(), 5);
+                            Player newPlayer = new Player(i,strName, 5, true);
                             myDb.insertData(newPlayer, i+1);
 
                         }
