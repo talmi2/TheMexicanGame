@@ -48,7 +48,7 @@
         android:layout_margin="16dp"
         android:background="@android:color/transparent"
 
-        android:text="Star game"
+        android:text="Start game"
         />
 
 

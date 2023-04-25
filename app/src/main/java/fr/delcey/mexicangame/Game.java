@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextUtils;
@@ -151,6 +152,23 @@ public class Game extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
+                String inputText = s.toString().trim();
+                if (inputText.length() == 2) {
+                    char firstDigit = inputText.charAt(0);
+                    char secondDigit = inputText.charAt(1);
+
+                    if (firstDigit < secondDigit) {
+                        String result = secondDigit + "" + firstDigit;
+                        playerInput.setText(result); // set the updated value back to the EditText
+                    }
+                }
+                if (playerInput.getText().toString().trim() == "31" || calculateScore(inputText) == 0) {
+                    // Display an error message or take other actions
+//                    Toast.makeText(Game.this, "Invalid score", Toast.LENGTH_SHORT).show();
+//                    return;
+                    playerInput.setError("invalid score " );
+                    next_player_button.setEnabled(false);
+                }
             }
 
             @Override
@@ -164,9 +182,11 @@ public class Game extends AppCompatActivity {
 
                         int score_previous_player = str;
                         int input = Integer.parseInt(s.toString());
+
                         int score = calculateScore(String.valueOf(input));
-                        if (score < score_previous_player) {
+                        if (score < score_previous_player && score_previous_player != 21) {
                             playerInput.setError("the score must be greater than or equal to that of the previous player " + getScore(score_previous_player));
+                            next_player_button.setEnabled(false);
                         }
 //                      else if(score_previous_player == 21){
 //                            joker
@@ -234,7 +254,9 @@ public class Game extends AppCompatActivity {
                 }
                 else{
                     dice1.setImageDrawable(previousDice2);
-
+                    int temp = actual[0];
+                    actual[0] = actual[1] ;
+                    actual[1] = temp;
                     // set the image of dice2 to the previous image
                     dice2.setImageDrawable(previousDice1);
                 }
@@ -245,8 +267,7 @@ public class Game extends AppCompatActivity {
                 String s = playerInput.getText().toString().trim();
                 int input = Integer.parseInt(s);
                 int score = calculateScore(String.valueOf(input));
-
-                if(c <= score && c != 21){
+                if(c >=  score && c != 21){
                     subtractPointFromPlayer(currentPlayerId);
                     String current_player_name = myDb.getCurrentPlayerName(currentPlayerId);
                     String toast = current_player_name + " lost a point";
@@ -254,7 +275,7 @@ public class Game extends AppCompatActivity {
                     playerName.setText(current_player_name + " - " + updatedScore);
                     Toast.makeText(Game.this, toast, Toast.LENGTH_SHORT).show();
                 }
-                else if(c > score && c != 21){
+                else if(c < score && c != 21){
 
                     String toast = player.getName() + " lost a point";
                     Toast.makeText(Game.this, toast, Toast.LENGTH_SHORT).show();
@@ -264,12 +285,16 @@ public class Game extends AppCompatActivity {
                     playerName.setText(player.getName() + " - " + updatedScore);
 
                     Intent intent = new Intent(Game.this, Game.class);
+                    currentScore = 1;
+                    intent.putExtra("Score", currentScore);
                 }
                 else if(c == 21 ){
-                    String toast = player.getName() + " you add a joker, replay";
+                    String toast = player.getName() + " you had a joker, replay";
                     Toast.makeText(Game.this, toast, Toast.LENGTH_SHORT).show();
                     currentPlayerId = (currentPlayerId - 1);
-                    playerName.setText(player.getName() + " - " + player.getScore());
+                    int updatedScore = myDb.getPlayerScore(currentPlayerId);
+
+                    playerName.setText(player.getName() + " - " + updatedScore);
 
                     Intent intent = new Intent(Game.this, Game.class);
 
@@ -475,14 +500,14 @@ public class Game extends AppCompatActivity {
                 return 20;
             case "31":
                 return 21;
-            default:
-                return 1;
+
         }
+        return 0;
     }
 
     public static int getScore(int input) {
         switch (input) {
-            case 1:
+            case 1 :
                 return 32;
             case 2:
                 return 41;
@@ -524,17 +549,21 @@ public class Game extends AppCompatActivity {
                 return 21;
             case 21:
                 return 31;
-            default:
-                return 32;
+
         }
+        return input;
     }
 
     public void viewAll(){
         btnviewAll.setOnClickListener(
             new View.OnClickListener(){
                 public void onClick(View v) {
-                    Intent intent = getIntent();
-                    int count = intent.getIntExtra("numberPlayers",0);
+                    int count = 0;
+                    List<Player> activePlayers = myDb.getActivePlayers(false);
+                    for (Player player : activePlayers) {
+                        count ++;
+                    }
+                    System.out.println(count + " coucou count");
                     Cursor res = myDb.getAllData(count);
                     if (res.getCount() == 0) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(Game.this);
@@ -545,12 +574,12 @@ public class Game extends AppCompatActivity {
                         return;
                     }
                     StringBuffer buffer = new StringBuffer();
-                    while (res.moveToNext()) {
-                        String playerName = res.getString(1);
-                        String playerScore = res.getString(2);
-                        buffer.append("Name : " + playerName + "\n");
-                        buffer.append("Score : " + playerScore  + "\n");
-                    }
+                        while (res.moveToNext()) {
+                            String playerName = res.getString(1);
+                            String playerScore = res.getString(2);
+                            buffer.append("Name : " + playerName + "\n");
+                            buffer.append("Score : " + playerScore + "\n\n");
+                        }
                     AlertDialog.Builder builder = new AlertDialog.Builder(Game.this);
                     builder.setTitle("Data");
                     builder.setMessage(buffer.toString());
@@ -597,8 +626,12 @@ public class Game extends AppCompatActivity {
         }
         Player nextPlayer = myDb.getNextActivePlayer(currentPlayerId);
         Intent intent = getIntent();
-        int count = intent.getIntExtra("numberPlayers",0);
-
+       // int count = intent.getIntExtra("numberPlayers",0);
+        int count = 0;
+        List<Player> activePlayers = myDb.getActivePlayers(false);
+        for (Player player1 : activePlayers) {
+            count ++;
+        }
 
         if (currentPlayerId == count){
             currentPlayerId = 1;
@@ -609,7 +642,6 @@ public class Game extends AppCompatActivity {
             currentPlayerId = nextPlayer.getId();
             playerName.setText(nextPlayer.getName() + " - " + nextPlayer.getScore());
         }
-        List<Player> activePlayers = myDb.getActivePlayers(false);
         if (activePlayers.size() == 1 && nextPlayer == null) {
             Player winner = activePlayers.get(0);
             Toast.makeText(Game.this, winner.getName() + " has won the game!", Toast.LENGTH_LONG).show();

@@ -16,8 +16,8 @@ public class DBHandler extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "Player_info.db";
     public static final int DATABASE_VERSION = 4;
     public static final String TABLE_NAME = "Players_table"; // Name of the Table...
-    public static final String KEY_ID = "ID";// Column1 of the table
-    public static final String KEY_NAME = "NAME";// Column2 of the table
+    public static final String KEY_ID = "ID";// Column 1 of the table
+    public static final String KEY_NAME = "NAME";// Column 2 of the table
     public static final String KEY_SCORE = "SCORE"; // Column 3 of the table
     public static final String KEY_STATUS = "STATUS"; // Column 4 of the table
 
@@ -203,7 +203,7 @@ public void updatePlayerStatus(int playerId, boolean newStatus) {
 
     public Cursor getAllData(int i) {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("select * from " + TABLE_NAME + " LIMIT " + i,null);
+        Cursor res = db.rawQuery("select * from " + TABLE_NAME + " WHERE " + KEY_STATUS + " = 1" ,null);
         return res;
     }
 }
