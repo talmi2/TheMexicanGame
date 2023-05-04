@@ -64,11 +64,30 @@ public class DBHandler extends SQLiteOpenHelper {
     }
 
 
+//    @SuppressLint("Range")
+//    public Player getPlayerName(int playerId) {
+//        SQLiteDatabase db = this.getReadableDatabase();
+//        String[] projection = {KEY_ID, KEY_NAME, KEY_SCORE, KEY_STATUS};
+//        Cursor cursor = db.query(TABLE_NAME, projection, null, null, null, null, KEY_ID + " ASC", "1");
+//        Player player = null;
+//        if (cursor.moveToFirst()) {
+//            playerId = cursor.getInt(cursor.getColumnIndex(KEY_ID));
+//            String playerName = cursor.getString(cursor.getColumnIndex(KEY_NAME));
+//            int playerScore = cursor.getInt(cursor.getColumnIndex(KEY_SCORE));
+//            boolean status = cursor.getInt(cursor.getColumnIndex(KEY_STATUS)) == 0;
+//
+//            player = new Player(playerId, playerName, playerScore, status);
+//        }
+//        cursor.close();
+//        return player;
+//    }
     @SuppressLint("Range")
     public Player getPlayerName(int playerId) {
         SQLiteDatabase db = this.getReadableDatabase();
         String[] projection = {KEY_ID, KEY_NAME, KEY_SCORE, KEY_STATUS};
-        Cursor cursor = db.query(TABLE_NAME, projection, null, null, null, null, KEY_ID + " ASC", "1");
+        String selection = KEY_ID + " = ?";
+        String[] selectionArgs = {String.valueOf(playerId)};
+        Cursor cursor = db.query(TABLE_NAME, projection, selection, selectionArgs, null, null, null);
         Player player = null;
         if (cursor.moveToFirst()) {
             playerId = cursor.getInt(cursor.getColumnIndex(KEY_ID));
@@ -81,24 +100,22 @@ public class DBHandler extends SQLiteOpenHelper {
         cursor.close();
         return player;
     }
-//
-//    @SuppressLint("Range")
-//    public Player getNextPlayerId(int currentPlayerId) {
-//        SQLiteDatabase db = this.getReadableDatabase();
-//        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + KEY_ID + "> ? LIMIT 1", new String[]{String.valueOf(currentPlayerId)});
-//        Player nextPlayer = null;
-//        if (cursor.moveToFirst()) {
-//            int id = cursor.getInt(cursor.getColumnIndex(KEY_ID));
-//            String name = cursor.getString(cursor.getColumnIndex(KEY_NAME));
-//            int score = cursor.getInt(cursor.getColumnIndex(KEY_SCORE));
-//            boolean status = cursor.getInt(cursor.getColumnIndex(KEY_STATUS)) == 0;
-//
-//            nextPlayer = new Player(id, name, score, status);
-//        }
-//        cursor.close();
-//        db.close();
-//        return nextPlayer;
-//    }
+
+    public void resetStatusInDatabase() {
+        // Get a writable reference to the database
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // Create a ContentValues object with the new status value
+        ContentValues values = new ContentValues();
+        values.put(KEY_STATUS, 0);
+
+        // Update all rows in the database with the new status value
+        db.update(TABLE_NAME, values, null, null);
+
+        // Close the database connection
+        db.close();
+    }
+
 
     @SuppressLint("Range")
     public int getPlayerScore(int playerId) {

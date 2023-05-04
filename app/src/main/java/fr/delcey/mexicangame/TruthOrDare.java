@@ -1,6 +1,7 @@
 package fr.delcey.mexicangame;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
@@ -23,6 +24,7 @@ public class TruthOrDare extends AppCompatActivity {
     private TextView promptTextView;
     private Button iDidItButton;
     private Button iDidntDoItButton;
+    private MediaPlayer mClickSound, mLoserSound;
 
     DBHandler myDb;
 
@@ -82,6 +84,8 @@ public class TruthOrDare extends AppCompatActivity {
         promptTextView = findViewById(R.id.prompt_textview);
         iDidItButton = findViewById(R.id.did_it_button);
         iDidntDoItButton = findViewById(R.id.didnt_do_it_button);
+        mClickSound = MediaPlayer.create(this, R.raw.click);
+        mLoserSound = MediaPlayer.create(this, R.raw.loser);
 
         iDidItButton.setEnabled(false);
         iDidntDoItButton.setEnabled(false);
@@ -92,12 +96,10 @@ public class TruthOrDare extends AppCompatActivity {
 
 
 
-        Player player = myDb.getPlayerName(currentId);
-        //currentId = player.getId();
-
         truthButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mClickSound.start();
                 displayRandomPrompt(truthPrompts);
                 iDidItButton.setEnabled(true);
                 iDidntDoItButton.setEnabled(true);
@@ -109,6 +111,7 @@ public class TruthOrDare extends AppCompatActivity {
         dareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mClickSound.start();
                 displayRandomPrompt(darePrompts);
                 iDidItButton.setEnabled(true);
                 iDidntDoItButton.setEnabled(true);
@@ -120,6 +123,8 @@ public class TruthOrDare extends AppCompatActivity {
         iDidItButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
+                mClickSound.start();
+
                 Toast iDidItToast = Toast.makeText(TruthOrDare.this, "Awesome! You can return to the game!", Toast.LENGTH_SHORT);
                 iDidItToast.setGravity(Gravity.CENTER_VERTICAL | Gravity.START, 500, 500);
                 iDidItToast.show();
@@ -146,6 +151,7 @@ public class TruthOrDare extends AppCompatActivity {
         iDidntDoItButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
+                mLoserSound.start();
                 Toast didntDoItToast = Toast.makeText(TruthOrDare.this, "Too bad! You're eliminated!", Toast.LENGTH_SHORT);
                 didntDoItToast.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL, 0, 0);
                 didntDoItToast.show();
@@ -156,6 +162,8 @@ public class TruthOrDare extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        myDb.updatePlayerStatus(currentId, false);
+
                         Intent intent = new Intent(TruthOrDare.this,Game.class);
                         startActivityForResult(intent,5);
 

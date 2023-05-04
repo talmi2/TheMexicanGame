@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.Image;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -21,8 +22,7 @@ public class Go extends AppCompatActivity {
     private LinearLayout lnrDynamicEditTextHolder;
     DBHandler myDb;
     Button mStartButton, mBackButton;
-    ImageView imageView;
-
+    private MediaPlayer mClickSound;
 
 
     @Override
@@ -32,8 +32,7 @@ public class Go extends AppCompatActivity {
 
         mStartButton = findViewById(R.id.play_button);
         mBackButton = findViewById(R.id.back_button);
-
-
+        mClickSound = MediaPlayer.create(this, R.raw.click);
 
 
         myDb = new DBHandler(this);
@@ -67,17 +66,13 @@ public class Go extends AppCompatActivity {
             linearLayout.addView(imageView);
 
             lnrDynamicEditTextHolder.addView(linearLayout);
-
-
-
-
-//          lnrDynamicEditTextHolder.addView(mPlayerName);
-
         }
 
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mClickSound.start();
+
 
                 startActivityForResult(new Intent(Go.this, MainActivity.class),5);
             }
