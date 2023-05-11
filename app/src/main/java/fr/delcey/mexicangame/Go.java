@@ -91,7 +91,9 @@ public class Go extends AppCompatActivity {
                         String strName = editText.getText().toString().trim();
 
                         if(TextUtils.isEmpty(strName)){
-                            Player newPlayer = new Player(i,"Player ", 5, true);
+                            int num = i +1;
+                            String p = "Player " + num;
+                            Player newPlayer = new Player(i,p, 5, true);
                             myDb.insertData(newPlayer, i+1);
                         }
                         else{

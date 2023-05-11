@@ -14,14 +14,20 @@ import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.*;
+
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+
 import DataBase.DBHandler;
 import DataBase.Player;
 import android.app.Dialog;
@@ -43,9 +49,9 @@ public class Game extends AppCompatActivity {
     DBHandler myDb;
     private Drawable previousDice1;
     private Drawable previousDice2;
-    int currentPlayerId = 1;
+    int currentPlayerId ;
     int currentScore = 1;
-    private MediaPlayer mDiceSound, mMexicanSong, mLoserSound, mViewDataSound, mClickSound;
+    private MediaPlayer mDiceSound, mMexicanSong, mLoserSound, mViewDataSound, mClickSound, mWinnerSound;
     private MessageDialog messageDialog;
     private WinnerDialog winnerDialog;
 
@@ -73,14 +79,24 @@ public class Game extends AppCompatActivity {
         mLoserSound = MediaPlayer.create(this, R.raw.loser);
         mViewDataSound = MediaPlayer.create(this, R.raw.data3);
         mClickSound = MediaPlayer.create(this, R.raw.click);
+        mWinnerSound = MediaPlayer.create(this, R.raw.winner);
+
         winnerDialog = new WinnerDialog(this);
 
 
         messageDialog = new MessageDialog(this);
 
+        int[] allowedScores = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21};
+        Set<Integer> allowedScoresSet = new HashSet<>();
+        for (int score : allowedScores) {
+            allowedScoresSet.add(score);
+        }
+        System.out.println("je bug hello " + allowedScoresSet);
 
         next_player_button.setEnabled(false);
         roll_again.setEnabled(false);
+        mReveal.setEnabled(false);
+        playerInput.setEnabled(false);
 
         myDb = new DBHandler(this);
         viewAll();
@@ -89,30 +105,26 @@ public class Game extends AppCompatActivity {
         List<Player> activePlayers = myDb.getActivePlayers(false);
         if (activePlayers.size() == 1) {
             Player winner = activePlayers.get(0);
+            mWinnerSound.start();
             winnerDialog.showMessage("Congratulation " + winner.getName() + " you have won", 3000);
         }
         else {
             for (Player players : activePlayers) {
+                Player p = activePlayers.get(0);
+
+                currentPlayerId = p.getId();
+                System.out.println(" cureent i " + currentPlayerId);
                 playerName.setText(myDb.getPlayerName(currentPlayerId).getName() + " : " + myDb.getPlayerName(currentPlayerId).getScore() + " point(s) left");
             }
         }
-//        Player player = myDb.getPlayerName(currentPlayerId);
-//        currentPlayerId = player.getId();
-//
-//
-//        playerName = findViewById(R.id.player_name);
-//        List<Player> activePlayers = myDb.getActivePlayers(false);
-//        for (Player players : activePlayers) {
-//                playerName.setText(players.getName() + " : " + players.getScore() + " point(s) left");
-//        }
-        System.out.println("coucou 1 ");
+
+        System.out.println("coucou 1 " );
 
 
         String strNumber = playerInput.getText().toString().trim();
 
         currentScore = calculateScore(strNumber);
         Player player = myDb.getPlayerName(currentPlayerId);
-        currentPlayerId = player.getId();
 
 
         mBackButton.setOnClickListener(new View.OnClickListener() {
@@ -127,9 +139,9 @@ public class Game extends AppCompatActivity {
         rollButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mMexicanSong.stop();
                 animateDice();
-
-
+                playerInput.setEnabled(true);
                 roll_again.setEnabled(true);
                 rollButton.setEnabled(false);
                 mReveal.setEnabled(false);
@@ -163,49 +175,65 @@ public class Game extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
                 String inputText = s.toString().trim();
-                if (inputText.length() == 2) {
-                    char firstDigit = inputText.charAt(0);
-                    char secondDigit = inputText.charAt(1);
-
-                    if (firstDigit < secondDigit) {
-                        String result = secondDigit + "" + firstDigit;
-                        playerInput.setText(result); // set the updated value back to the EditText
-                    }
-                }
-                if (playerInput.getText().toString().trim() == "31" || calculateScore(inputText) == 0) {
+//                if (inputText.length() == 2) {
+//                    char firstDigit = inputText.charAt(0);
+//                    char secondDigit = inputText.charAt(1);
+//
+//                    if (firstDigit < secondDigit) {
+//                        String result = secondDigit + "" + firstDigit;
+//                        playerInput.setText(result); // set the updated value back to the EditText
+//                    }
+//                }
+                if (playerInput.getText().toString().trim().equals("31") || inputText.length() != 2 || !allowedScoresSet.contains(calculateScore(inputText))) {
                     // Display an error message or take other actions
-                    playerInput.setError("invalid score ");
-                    next_player_button.setEnabled(false);
+//                    System.out.println("je bug " + calculateScore(inputText) + "hello " + allowedScoresSet);
+                    playerInput.setError("invalid score");
+
                 }
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                next_player_button.setEnabled(!s.toString().isEmpty());
-                if (!s.toString().isEmpty()) {
-                    Intent intent = getIntent();
-                    // receive the value by getStringExtra() method and
-                    // key must be same which is send by first activity
-                    int str = intent.getIntExtra("Score", currentScore);
 
-                    int score_previous_player = str;
-                    int input = Integer.parseInt(s.toString());
 
-                    int score = calculateScore(String.valueOf(input));
-                    if (score < score_previous_player && score_previous_player != 21) {
-                        playerInput.setError("the score must be greater than or equal to that of the previous player " + getScore(score_previous_player));
-                        next_player_button.setEnabled(false);
-                    }
+                String inputText = s.toString().trim();
+
+                if (playerInput.getText().toString().trim().equals("31") || inputText.length() != 2 || !allowedScoresSet.contains(calculateScore(inputText))) {
+                    System.out.println("je bug " + calculateScore(inputText) + " hello " + allowedScoresSet);
+                    next_player_button.setEnabled(false);
                 }
 
+                else {
+                    next_player_button.setEnabled(!s.toString().isEmpty());
+                    if (!s.toString().isEmpty()) {
+                        Intent intent = getIntent();
+                        // receive the value by getStringExtra() method and
+                        // key must be same which is send by first activity
+                        int str = intent.getIntExtra("Score", currentScore);
+
+                        int score_previous_player = str;
+                        int input = Integer.parseInt(s.toString());
+//                        int firstDigit = input / 10;
+//                        int secondDigit = input % 10;
+//
+//                        if (firstDigit < secondDigit) {
+//                            input = secondDigit * 10 + firstDigit;
+//                        }
+                        int score = calculateScore(String.valueOf(input));
+                        if (score < score_previous_player && score_previous_player != 21) {
+                            playerInput.setError("the score must be greater than or equal to that of the previous player " + getScore(score_previous_player));
+                            next_player_button.setEnabled(false);
+                        }
+                    }
+                }
             }
         });
         next_player_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mMexicanSong.stop();
                 mClickSound.start();
                 String strNumber = playerInput.getText().toString().trim();
-
                 int[] actual = getDiceScore(previousDice1, previousDice2);
 
                 if (actual[0] > actual[1]) {
@@ -215,7 +243,9 @@ public class Game extends AppCompatActivity {
                     dice2.setImageDrawable(previousDice2);
                 } else {
                     dice1.setImageDrawable(previousDice2);
-
+                    int temp = actual[0];
+                    actual[0] = actual[1];
+                    actual[1] = temp;
                     // set the image of dice2 to the previous image
                     dice2.setImageDrawable(previousDice1);
                 }
@@ -226,30 +256,15 @@ public class Game extends AppCompatActivity {
                 rollButton.setEnabled(true);
                 roll_again.setEnabled(false);
                 mReveal.setEnabled(true);
-                next_player_button.setEnabled(false);
-//
-//                if (activePlayers.size() == 1) {
-//                    // Only one player left, do not move to the next player
-//                    Player player = activePlayers.get(0);
-//                    winnerDialog.showMessage("Congratulation, "+ player.getName() +" turn !", 3000);
-//                    playerName.setText(player.getName() + " : " + player.getScore() + " point(s) left");
-//                } else {
+
                 // Move to the next player
                 nextPlayer();
 
                 Intent intent = new Intent(Game.this, Game.class);
                 currentScore = calculateScore(strNumber);
                 intent.putExtra("Score", currentScore);
-                // }
 
-//                    // Get the list of active players (excluding the eliminated player)
-//
-//                    nextPlayer();
-//
-//                    // Add the player ID as an extra to the Intent
-//                    Intent intent = new Intent(Game.this, Game.class);
-//                    currentScore = calculateScore(strNumber);
-//                    intent.putExtra("Score", currentScore);
+
             }
         });
         mReveal.setOnClickListener(new View.OnClickListener() {
@@ -282,7 +297,15 @@ public class Game extends AppCompatActivity {
 
                 String s = playerInput.getText().toString().trim();
                 int input = Integer.parseInt(s);
+//                int firstDigit = input / 10;
+//                int secondDigit = input % 10;
+//
+//                if (firstDigit < secondDigit) {
+//                    input  = secondDigit * 10  + firstDigit;
+//                }
+
                 int score = calculateScore(String.valueOf(input));
+
                 if (c >= score && c != 21 && c != 20) {
                     subtractPointFromPlayer(currentPlayerId);
                     String current_player_name = myDb.getCurrentPlayerName(currentPlayerId);
@@ -290,8 +313,6 @@ public class Game extends AppCompatActivity {
                     int updatedScore = myDb.getPlayerScore(currentPlayerId);
                     playerName.setText(current_player_name + " : " + updatedScore + " point(s) left");
                     System.out.println("coucou 2 ");
-
-
                     Toast.makeText(Game.this, toast, Toast.LENGTH_SHORT).show();
                     currentScore = 1;
 
@@ -325,15 +346,10 @@ public class Game extends AppCompatActivity {
                     currentScore = 1;
                     intent.putExtra("Score", currentScore);
                 } else if (c == 21) {
-                    String toast = player.getName() + " you had a joker, replay";
-                    Toast.makeText(Game.this, toast, Toast.LENGTH_SHORT).show();
                     currentPlayerId = (currentPlayerId - 1);
-                    int updatedScore = myDb.getPlayerScore(currentPlayerId);
-
-                    playerName.setText(player.getName() + " : " + updatedScore + " point(s) left");
+                    messageDialog.showMessage(player.getName() + " had a joker, it's his/her turn again", 3000);
+                    playerName.setText(player.getName() + " : " + myDb.getPlayerScore(currentPlayerId) + " point(s) left");
                     System.out.println("coucou 4 ");
-
-
                     Intent intent = new Intent(Game.this, Game.class);
 
                 } else if (c == 20) {
@@ -437,20 +453,23 @@ public class Game extends AppCompatActivity {
         // Update the player's score in the database
         myDb.updatePlayerScore(playerId, newScore);
 
-        if (newScore == 0) {
+        if (newScore <= 0 ) {
             myDb.updatePlayerStatus(currentPlayerId, false);
 
             boolean hasSecondChance = getIntent().getBooleanExtra("hasSecondChance", false);
             if (hasSecondChance) {
-                //     myDb.updatePlayerStatus(currentPlayerId, false);
                 String eliminatedPlayer = myDb.getCurrentPlayerName(currentPlayerId);
                 mLoserSound.start();
                 String toast = eliminatedPlayer + " has been eliminated!";
                 Toast.makeText(Game.this, toast, Toast.LENGTH_SHORT).show();
                 List<Player> activePlayers = myDb.getActivePlayers(false);
 
+
                 if (activePlayers.size() == 1) {
+                    mLoserSound.stop();
                     Player winner = activePlayers.get(0);
+                    mWinnerSound.start();
+
                     winnerDialog.showMessage("Congratulation " + winner.getName() + " you have won", 3000);
                 }
                 else {
@@ -470,60 +489,69 @@ public class Game extends AppCompatActivity {
 
 
             } else {
-                AlertDialog.Builder builder = new AlertDialog.Builder(Game.this);
-                builder.setTitle("You lost")
-                        .setMessage("Would you like a last chance?")
-                        .setPositiveButton("Yes, pleas", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                Intent intent = new Intent(Game.this, TruthOrDare.class);
-                                intent.putExtra("PlayerId", playerId);
-                                intent.putExtra("hasSecondChance", true);
-                                startActivityForResult(intent, 5);
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dialog_last_chance, null);
+
+                // Build the AlertDialog
+                AlertDialog dialog = new AlertDialog.Builder(Game.this)
+                        .setView(dialogView)
+                        .create();
+
+                // Find the buttons in the custom layout and set their click listeners
+                Button yesButton = dialogView.findViewById(R.id.dialogButton_yes);
+                Button noButton = dialogView.findViewById(R.id.dialogButton_no);
+
+                yesButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Handle "Yes" button click
+                        Intent intent = new Intent(Game.this, TruthOrDare.class);
+                        intent.putExtra("PlayerId", playerId);
+                        intent.putExtra("hasSecondChance", true);
+                        startActivityForResult(intent, 5);
+                        dialog.dismiss();
+                    }
+                });
+
+                noButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Handle "No" button click
+                        // Update the status of the eliminated player to inactive
+                        String eliminatedPlayer = myDb.getCurrentPlayerName(currentPlayerId);
+                        String toast = eliminatedPlayer + " has been eliminated!";
+                        Toast.makeText(Game.this, toast, Toast.LENGTH_SHORT).show();
+
+                        // Get the list of active players (excluding the eliminated player)
+                        List<Player> activePlayers = myDb.getActivePlayers(false);
+                        if (activePlayers.size() == 1) {
+                            Player winner = activePlayers.get(0);
+                            mWinnerSound.start();
+                            winnerDialog.showMessage("Congratulation " + winner.getName() + " you have won", 15000);
+                        }
+                        else {
+                            for (Player player : activePlayers) {
+                                nextPlayer();
+                                player = myDb.getPlayerName(currentPlayerId);
+
+                                playerName.setText(player.getName() + " : " + player.getScore() + " point(s) left");
+                                System.out.println("coucou 7 ");
+
                             }
-                        })
-                        .setNegativeButton("No, thank you", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // Update the status of the eliminated player to inactive
-                                String eliminatedPlayer = myDb.getCurrentPlayerName(currentPlayerId);
-                                String toast = eliminatedPlayer + " has been eliminated!";
-                                Toast.makeText(Game.this, toast, Toast.LENGTH_SHORT).show();
-
-                                // Get the list of active players (excluding the eliminated player)
-                                List<Player> activePlayers = myDb.getActivePlayers(false);
-                                System.out.println(activePlayers.size() + "chianttttttttt");
-                                if (activePlayers.size() == 1) {
-                                    System.out.println("helo o won");
-                                    Player winner = activePlayers.get(0);
-                                    winnerDialog.showMessage("Congratulation " + winner.getName() + " you have won", 3000);
-                                }
-                                else {
-                                    for (Player player : activePlayers) {
-                                        nextPlayer();
-                                        player = myDb.getPlayerName(currentPlayerId);
-
-                                        playerName.setText(player.getName() + " : " + player.getScore() + " point(s) left");
-                                        System.out.println("coucou 7 ");
-
-                                    }
-                                    Intent intent = new Intent(Game.this, Game.class);
-                                    startActivity(intent);
-                                }
-
-
-
-                            }
-                        });
-                AlertDialog dialog = builder.create();
+                            Intent intent = new Intent(Game.this, Game.class);
+                            startActivity(intent);
+                        }
+                        dialog.dismiss();
+                    }
+                });
                 dialog.setCancelable(false); // Set the dialog to be non-cancelable
                 dialog.show();
             }
         }
-
-
     }
 
     private int[] getDiceScore(Drawable dice1, Drawable dice2) {
-        Drawable[] diceImages = {null, getResources().getDrawable(R.drawable.d_1), getResources().getDrawable(R.drawable.d_2),
+        @SuppressLint("UseCompatLoadingForDrawables") Drawable[] diceImages = {null, getResources().getDrawable(R.drawable.d_1), getResources().getDrawable(R.drawable.d_2),
                 getResources().getDrawable(R.drawable.d_3), getResources().getDrawable(R.drawable.d_4),
                 getResources().getDrawable(R.drawable.d_5), getResources().getDrawable(R.drawable.d_6)};
 
@@ -645,9 +673,9 @@ public class Game extends AppCompatActivity {
                 return 20;
             case "31":
                 return 21;
-
+            default:
+                return 0;
         }
-        return 0;
     }
 
     public static int getScore(int input) {
@@ -740,35 +768,22 @@ public class Game extends AppCompatActivity {
         if (player == null) {
             // The current player has already been eliminated, skip over them
             currentPlayerId = myDb.getNextActivePlayer(currentPlayerId).getId();
-//            player = myDb.getPlayerName(currentPlayerId);
         }
         Player nextPlayer = myDb.getNextActivePlayer(currentPlayerId);
-        Intent intent = getIntent();
-        // int count = intent.getIntExtra("numberPlayers",0);
-        int count = 0;
         List<Player> activePlayers = myDb.getActivePlayers(false);
-        for (Player player1 : activePlayers) {
-            count++;
-        }
-        if (currentPlayerId == count) {
-            currentPlayerId = 1;
-            int updatedScore = myDb.getPlayerScore(currentPlayerId);
-            messageDialog.showMessage("It's " + myDb.getPlayerName(currentPlayerId).getName() + " turn !", 3000);
 
-            playerName.setText(myDb.getPlayerName(currentPlayerId).getName() + " : " + updatedScore + " point(s) left");
-            System.out.println("coucou 8 ");
-
-        } else if (nextPlayer != null) {
-
+        if (nextPlayer != null) {
             currentPlayerId = nextPlayer.getId();
-            messageDialog.showMessage("It's " + nextPlayer.getName() + " turn !", 3000);
-
+            messageDialog.showMessage("It's " + nextPlayer.getName() + "'s turn!", 3000);
             playerName.setText(nextPlayer.getName() + " : " + nextPlayer.getScore() + " point(s) left");
             System.out.println("coucou 9 ");
-
-
         }
-
+        else {
+            // Loop back to the first player
+            currentPlayerId = activePlayers.get(0).getId();
+            messageDialog.showMessage("It's " + activePlayers.get(0).getName() + "'s turn!", 3000);
+            playerName.setText(activePlayers.get(0).getName() + " : " + activePlayers.get(0).getScore() + " point(s) left");
+        }
     }
 
     class MessageDialog {
@@ -780,7 +795,6 @@ public class Game extends AppCompatActivity {
         }
 
         public void showMessage(String message, int duration) {
-            // Créer le dialog personnalisé
             dialog = new Dialog(context);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setCancelable(false);
@@ -836,7 +850,7 @@ public class Game extends AppCompatActivity {
                 window.setAttributes(layoutParams);
             }
             LottieAnimationView confettiAnimationView = dialog.findViewById(R.id.lottie_animation_view);
-            confettiAnimationView.setAnimation("confetti.json");
+            confettiAnimationView.setAnimation("fireworks.json");
             confettiAnimationView.setBackgroundColor(Color.TRANSPARENT);
             confettiAnimationView.playAnimation();
 
@@ -862,9 +876,11 @@ public class Game extends AppCompatActivity {
                 @Override
                 public void run() {
                     dialog.dismiss();
-                    game.finish();
+                    Intent intent = new Intent(context, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
                 }
-            }, 30000);
+            }, 5000);
         }
     }
 }

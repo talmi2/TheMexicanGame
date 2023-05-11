@@ -136,7 +136,13 @@ public class TruthOrDare extends AppCompatActivity {
                     @Override
                     public void run() {
                         int currentScore = myDb.getPlayerScore(currentId);
-                        currentScore ++ ;
+                        if (currentScore == 0){
+                            currentScore ++ ;
+                        }
+                        else if (currentScore == -1){
+                            currentScore += 2;
+                        }
+
                         myDb.updatePlayerScore(currentId, currentScore);
                         myDb.updatePlayerStatus(currentId, true);
 

@@ -87,6 +87,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:onClick="rollDice"
+        android:background="@color/white"
         android:text="Roll Dice" />
 
 
@@ -105,7 +106,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:text="announcement :"
+            android:text="Announcement :"
             android:textAlignment="center"
             android:textSize="23dp" />
 
@@ -129,31 +130,31 @@
         android:layout_marginTop="20dp"
         android:gravity="center"
         android:orientation="horizontal">
-    <Button
-        android:id="@+id/roll_again"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:onClick="rollDice"
-        android:text="Roll Again"
-        android:background="@color/mexico_green"
-        />
+
+        <Button
+            android:id="@+id/roll_again"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:background="@color/mexico_green"
+            android:onClick="rollDice"
+            android:text="Roll Again" />
+
+
+        <Button
+            android:id="@+id/print_game"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:background="@drawable/reveal_button"
+            android:text="Reveal" />
 
         <Button
             android:id="@+id/next_player"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Next"
-            android:background="@color/white"
-            />
-        <Button
-            android:id="@+id/print_game"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:text="Reveal"
-            android:background="@color/mexico_red"/>
-
+            android:background="@color/mexico_red"
+            android:text="Next" />
     </LinearLayout>
 
 
