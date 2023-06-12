@@ -44,7 +44,6 @@
             android:padding="16dp"
             android:text="Dare"
             android:background="@drawable/round_red"
-            android:textColor="@android:color/white"
             />
 
     </LinearLayout>
@@ -77,7 +76,6 @@
             android:padding="16dp"
             android:text="I didn't do it"
             android:background="@drawable/round_red"
-            android:textColor="@android:color/white"
 
             />
 

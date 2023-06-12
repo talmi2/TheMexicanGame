@@ -39,18 +39,6 @@ public class DBHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(db);
     }
-//    public boolean insertData(Player player, int i) {
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        ContentValues contentValues = new ContentValues();
-//        contentValues.put(KEY_NAME, player.getName());
-//        contentValues.put(KEY_SCORE, player.getScore());
-//        contentValues.put(KEY_STATUS, player.hasRegainedPoint() ? 1 : 0);
-//        long result = db.insert(TABLE_NAME, null, contentValues);
-//        if (result == -1)
-//            return false;
-//        else
-//            return true;
-//    }
 
     public boolean insertData(Player player, int i) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -64,23 +52,6 @@ public class DBHandler extends SQLiteOpenHelper {
     }
 
 
-//    @SuppressLint("Range")
-//    public Player getPlayerName(int playerId) {
-//        SQLiteDatabase db = this.getReadableDatabase();
-//        String[] projection = {KEY_ID, KEY_NAME, KEY_SCORE, KEY_STATUS};
-//        Cursor cursor = db.query(TABLE_NAME, projection, null, null, null, null, KEY_ID + " ASC", "1");
-//        Player player = null;
-//        if (cursor.moveToFirst()) {
-//            playerId = cursor.getInt(cursor.getColumnIndex(KEY_ID));
-//            String playerName = cursor.getString(cursor.getColumnIndex(KEY_NAME));
-//            int playerScore = cursor.getInt(cursor.getColumnIndex(KEY_SCORE));
-//            boolean status = cursor.getInt(cursor.getColumnIndex(KEY_STATUS)) == 0;
-//
-//            player = new Player(playerId, playerName, playerScore, status);
-//        }
-//        cursor.close();
-//        return player;
-//    }
     @SuppressLint("Range")
     public Player getPlayerName(int playerId) {
         SQLiteDatabase db = this.getReadableDatabase();

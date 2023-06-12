@@ -22,8 +22,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="\nWhen a player has no more points, he has two options:\n\n
-	First option: \n\n Play truth or dare. If he succeeds in answering the question asked
+        android:text="\nWhen a player has no more points he can play truth or dare. If he succeeds in answering the question asked
 or carrying out the action given to him, he recovers 1 point and
 can return to the game to try to win. Otherwise, he is eliminated."
         android:layout_gravity="center"

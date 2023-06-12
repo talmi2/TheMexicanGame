@@ -84,14 +84,7 @@ public class MainActivity extends AppCompatActivity {
                 mClickSound.start();
 
                 String strNumber = mNumEditText.getText().toString().trim();
-//                if(TextUtils.isEmpty(strNumber) || (Integer.parseInt(strNumber) < 2 || Integer.parseInt(strNumber)>9)){
-//                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-//                    builder.setTitle("Error");
-//                    builder.setMessage("You need yo enter a number between 2 and 9");
-//                    builder.setPositiveButton("OK", null);
-//                    builder.show();
-//                }
-//                else{
+
                     Intent intent = new Intent(MainActivity.this,Go.class);
                     intent.putExtra("numPlayers", strNumber);
                     startActivityForResult(intent,5);

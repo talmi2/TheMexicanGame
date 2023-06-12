@@ -16,7 +16,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="8dp"
-        android:text="Welcome To The Mexican Game !"
+        android:text="Welcome to The Mexican Game !"
         android:textSize="23dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="60dp"

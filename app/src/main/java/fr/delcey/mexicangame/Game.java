@@ -54,6 +54,7 @@ public class Game extends AppCompatActivity {
     private MediaPlayer mDiceSound, mMexicanSong, mLoserSound, mViewDataSound, mClickSound, mWinnerSound;
     private MessageDialog messageDialog;
     private WinnerDialog winnerDialog;
+    private boolean roll_once = false;
 
 
     @SuppressLint("MissingInflatedId")
@@ -91,7 +92,6 @@ public class Game extends AppCompatActivity {
         for (int score : allowedScores) {
             allowedScoresSet.add(score);
         }
-        System.out.println("je bug hello " + allowedScoresSet);
 
         next_player_button.setEnabled(false);
         roll_again.setEnabled(false);
@@ -118,7 +118,6 @@ public class Game extends AppCompatActivity {
             }
         }
 
-        System.out.println("coucou 1 " );
 
 
         String strNumber = playerInput.getText().toString().trim();
@@ -139,12 +138,16 @@ public class Game extends AppCompatActivity {
         rollButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                roll_once = true;
                 mMexicanSong.stop();
                 animateDice();
                 playerInput.setEnabled(true);
                 roll_again.setEnabled(true);
                 rollButton.setEnabled(false);
+                next_player_button.setEnabled(false);
                 mReveal.setEnabled(false);
+                playerInput.setText("");
+
 
             }
         });
@@ -175,18 +178,10 @@ public class Game extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
                 String inputText = s.toString().trim();
-//                if (inputText.length() == 2) {
-//                    char firstDigit = inputText.charAt(0);
-//                    char secondDigit = inputText.charAt(1);
-//
-//                    if (firstDigit < secondDigit) {
-//                        String result = secondDigit + "" + firstDigit;
-//                        playerInput.setText(result); // set the updated value back to the EditText
-//                    }
-//                }
+
                 if (playerInput.getText().toString().trim().equals("31") || inputText.length() != 2 || !allowedScoresSet.contains(calculateScore(inputText))) {
                     // Display an error message or take other actions
-//                    System.out.println("je bug " + calculateScore(inputText) + "hello " + allowedScoresSet);
+
                     playerInput.setError("invalid score");
 
                 }
@@ -204,7 +199,8 @@ public class Game extends AppCompatActivity {
                 }
 
                 else {
-                    next_player_button.setEnabled(!s.toString().isEmpty());
+
+                    next_player_button.setEnabled(!s.toString().isEmpty() && roll_once);
                     if (!s.toString().isEmpty()) {
                         Intent intent = getIntent();
                         // receive the value by getStringExtra() method and
@@ -213,12 +209,7 @@ public class Game extends AppCompatActivity {
 
                         int score_previous_player = str;
                         int input = Integer.parseInt(s.toString());
-//                        int firstDigit = input / 10;
-//                        int secondDigit = input % 10;
-//
-//                        if (firstDigit < secondDigit) {
-//                            input = secondDigit * 10 + firstDigit;
-//                        }
+
                         int score = calculateScore(String.valueOf(input));
                         if (score < score_previous_player && score_previous_player != 21) {
                             playerInput.setError("the score must be greater than or equal to that of the previous player " + getScore(score_previous_player));
@@ -255,10 +246,13 @@ public class Game extends AppCompatActivity {
 
                 rollButton.setEnabled(true);
                 roll_again.setEnabled(false);
+                next_player_button.setEnabled(false);
                 mReveal.setEnabled(true);
 
                 // Move to the next player
                 nextPlayer();
+                roll_once = false;
+
 
                 Intent intent = new Intent(Game.this, Game.class);
                 currentScore = calculateScore(strNumber);
@@ -297,12 +291,7 @@ public class Game extends AppCompatActivity {
 
                 String s = playerInput.getText().toString().trim();
                 int input = Integer.parseInt(s);
-//                int firstDigit = input / 10;
-//                int secondDigit = input % 10;
-//
-//                if (firstDigit < secondDigit) {
-//                    input  = secondDigit * 10  + firstDigit;
-//                }
+
 
                 int score = calculateScore(String.valueOf(input));
 
@@ -312,7 +301,6 @@ public class Game extends AppCompatActivity {
                     String toast = current_player_name + " lost a point";
                     int updatedScore = myDb.getPlayerScore(currentPlayerId);
                     playerName.setText(current_player_name + " : " + updatedScore + " point(s) left");
-                    System.out.println("coucou 2 ");
                     Toast.makeText(Game.this, toast, Toast.LENGTH_SHORT).show();
                     currentScore = 1;
 
@@ -349,7 +337,6 @@ public class Game extends AppCompatActivity {
                     currentPlayerId = (currentPlayerId - 1);
                     messageDialog.showMessage(player.getName() + " had a joker, it's his/her turn again", 3000);
                     playerName.setText(player.getName() + " : " + myDb.getPlayerScore(currentPlayerId) + " point(s) left");
-                    System.out.println("coucou 4 ");
                     Intent intent = new Intent(Game.this, Game.class);
 
                 } else if (c == 20) {
@@ -361,7 +348,6 @@ public class Game extends AppCompatActivity {
                     String toast = current_player_name + " lost two point";
                     int updatedScore = myDb.getPlayerScore(currentPlayerId);
                     playerName.setText(current_player_name + " : " + updatedScore + " point(s) left");
-                    System.out.println("coucou 5 ");
 
                     Toast.makeText(Game.this, toast, Toast.LENGTH_SHORT).show();
                     currentScore = 1;
@@ -478,7 +464,6 @@ public class Game extends AppCompatActivity {
                         nextPlayer();
                         player = myDb.getPlayerName(currentPlayerId);
                         playerName.setText(player.getName() + " : " + player.getScore() + " point(s) left");
-                        System.out.println("coucou 6 ");
 
                     }
                 }
@@ -535,7 +520,6 @@ public class Game extends AppCompatActivity {
                                 player = myDb.getPlayerName(currentPlayerId);
 
                                 playerName.setText(player.getName() + " : " + player.getScore() + " point(s) left");
-                                System.out.println("coucou 7 ");
 
                             }
                             Intent intent = new Intent(Game.this, Game.class);
@@ -776,7 +760,6 @@ public class Game extends AppCompatActivity {
             currentPlayerId = nextPlayer.getId();
             messageDialog.showMessage("It's " + nextPlayer.getName() + "'s turn!", 3000);
             playerName.setText(nextPlayer.getName() + " : " + nextPlayer.getScore() + " point(s) left");
-            System.out.println("coucou 9 ");
         }
         else {
             // Loop back to the first player
